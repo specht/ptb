@@ -1,3 +1,5 @@
+# ptb delivery configuration
+
 projects:
   - projects/xml2mgf
   - projects/checkspectra
