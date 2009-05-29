@@ -1,0 +1,13 @@
+projects:
+  - projects/xml2mgf
+  - projects/checkspectra
+  - projects/decoyfasta
+  - projects/stripscans
+  - projects/matchpeptides
+qt: [core, gui, xml, svg]
+win32Libs: []
+versionInject:
+  src/version.h: |
+    #pragma once
+    #include <QtCore>
+    QString gs_Version = "#{VERSION}";

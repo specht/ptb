@@ -1,0 +1,8 @@
+<!DOCTYPE RCC><RCC version="1.0">
+	<qresource>
+		<file>res/AminoAcids.csv</file>
+		<file>res/DnaToAminoAcid.csv</file>
+		<file>res/qtrace-xhtml-header.xhtml.part</file>
+		<file>res/qtrace-xhtml-footer.xhtml.part</file>
+	</qresource>
+</RCC>
