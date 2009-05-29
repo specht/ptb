@@ -4,6 +4,7 @@ projects:
   - projects/decoyfasta
   - projects/stripscans
   - projects/matchpeptides
+  - projects/translatedna
 qt: [core, gui, xml, svg]
 win32Libs: []
 versionInject:

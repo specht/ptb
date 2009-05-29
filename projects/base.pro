@@ -25,7 +25,7 @@ else {
 
 DESTDIR = ../../
 
-QT = core gui xml svg
+QT = core gui xml
 
 HEADERS += \
 	../../src/FastaReader.h \
