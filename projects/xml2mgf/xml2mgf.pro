@@ -6,8 +6,6 @@ CONFIG(debug, debug|release) {
 }
 
 HEADERS += \
-	../../src/MgfWriter.h \
 
 SOURCES += \
-	../../src/MgfWriter.cpp \
 	../../src/xml2mgf.cpp \
