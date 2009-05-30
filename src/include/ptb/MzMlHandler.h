@@ -18,14 +18,15 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #pragma once
-#include "XmlHandler.h"
+#include <ptb/XmlHandler.h>
+#include <ptb/RefPtr.h>
 
 
-class k_MzXmlHandler: public k_XmlHandler
+class k_MzMlHandler: public k_XmlHandler
 {
 public:
-	k_MzXmlHandler(k_ScanIterator& ak_ScanIterator);
-	virtual ~k_MzXmlHandler();
+	k_MzMlHandler(k_ScanIterator& ak_ScanIterator);
+	virtual ~k_MzMlHandler();
 	
 	virtual bool startElement(const QString &namespaceURI, const QString &localName,
 							  const QString &qName, const QXmlAttributes &attributes);
@@ -33,5 +34,11 @@ public:
 protected:
 	virtual void handleElement(const QString& as_Tag, const tk_XmlAttributes& ak_Attributes, const QString as_Text);
 	
-	QList<r_Scan> mk_ScanStack;
+	RefPtr<r_Scan> mr_pCurrentScan;
+	QString ms_BinaryPrecision;
+	QString ms_BinaryCompression;
+	QString ms_BinaryType;
+	QString ms_PrecursorMz;
+	QString ms_PrecursorIntensity;
+	QString ms_PrecursorChargeState;
 };

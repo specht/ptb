@@ -19,7 +19,7 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 #include <QtCore>
-#include "ScanIterator.h"
+#include <ptb/ScanIterator.h>
 
 
 class k_SpectrumChecker: public k_ScanIterator

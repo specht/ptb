@@ -18,31 +18,21 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #pragma once
-#include <QtCore>
-#include <QtXml>
-#include "ScanIterator.h"
+#include <ptb/XmlHandler.h>
+#include <ptb/RefPtr.h>
 
 
-typedef QHash<QString, QString> tk_XmlAttributes;
-typedef QPair<QString, tk_XmlAttributes> tk_XmlElement;
-
-
-class k_XmlHandler: public QXmlDefaultHandler
+class k_MzDataHandler: public k_XmlHandler
 {
 public:
-	k_XmlHandler(k_ScanIterator& ak_ScanIterator);
-	virtual ~k_XmlHandler();
-
+	k_MzDataHandler(k_ScanIterator& ak_ScanIterator);
+	virtual ~k_MzDataHandler();
+	
 	virtual bool startElement(const QString &namespaceURI, const QString &localName,
 							  const QString &qName, const QXmlAttributes &attributes);
-	virtual bool endElement(const QString &namespaceURI, const QString &localName,
-							const QString &qName);
-	virtual bool characters(const QString &str);
-	
+
 protected:
-	virtual void handleElement(const QString& as_Tag, const tk_XmlAttributes& ak_Attributes, const QString as_Text) = 0;
+	virtual void handleElement(const QString& as_Tag, const tk_XmlAttributes& ak_Attributes, const QString as_Text);
 	
-	k_ScanIterator& mk_ScanIterator;
-	QList<tk_XmlElement> mk_XmlPath;
-	QList<QString> mk_XmlPathText;
+	RefPtr<r_Scan> mr_pScan;
 };

@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "FastaWriter.h"
+#include <ptb/FastaWriter.h>
 
 
 k_FastaWriter::k_FastaWriter(QIODevice* ak_Device_)

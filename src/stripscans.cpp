@@ -19,9 +19,9 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QtCore>
 #include <stdio.h>
-#include "RefPtr.h"
+#include <ptb/RefPtr.h>
 #include "version.h"
-#include "ZipFileOrNot.h"
+#include <ptb/ZipFileOrNot.h>
 
 
 void printUsageAndExit()

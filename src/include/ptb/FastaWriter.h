@@ -19,7 +19,7 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 #include <QtCore>
-#include "FastaReader.h"
+#include <ptb/FastaReader.h>
 
 
 class k_FastaWriter

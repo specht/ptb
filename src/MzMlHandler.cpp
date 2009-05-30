@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "MzMlHandler.h"
-#include "ScanIterator.h"
+#include <ptb/MzMlHandler.h>
+#include <ptb/ScanIterator.h>
 
 #define CV_MS_LEVEL "MS:1000511"
 #define CV_MS_SCAN_TYPE_MS1 "MS:1000579"

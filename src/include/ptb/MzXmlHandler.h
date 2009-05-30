@@ -18,22 +18,20 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #pragma once
-#include <QtCore>
-#include <quazip/quazip.h>
-#include <quazip/quazipfile.h>
-#include "RefPtr.h"
+#include <ptb/XmlHandler.h>
 
 
-class k_ZipFileOrNot
+class k_MzXmlHandler: public k_XmlHandler
 {
 public:
-	k_ZipFileOrNot(QString as_Path);
-	virtual ~k_ZipFileOrNot();
+	k_MzXmlHandler(k_ScanIterator& ak_ScanIterator);
+	virtual ~k_MzXmlHandler();
 	
-	QIODevice* device();
-	
+	virtual bool startElement(const QString &namespaceURI, const QString &localName,
+							  const QString &qName, const QXmlAttributes &attributes);
+
 protected:
-	QString ms_Path;
-	RefPtr<QuaZip> mk_pZip;
-	RefPtr<QIODevice> mk_pDevice;
+	virtual void handleElement(const QString& as_Tag, const tk_XmlAttributes& ak_Attributes, const QString as_Text);
+	
+	QList<r_Scan> mk_ScanStack;
 };

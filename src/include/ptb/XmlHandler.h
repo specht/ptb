@@ -18,27 +18,31 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #pragma once
-#include "XmlHandler.h"
-#include "RefPtr.h"
+#include <QtCore>
+#include <QtXml>
+#include <ptb/ScanIterator.h>
 
 
-class k_MzMlHandler: public k_XmlHandler
+typedef QHash<QString, QString> tk_XmlAttributes;
+typedef QPair<QString, tk_XmlAttributes> tk_XmlElement;
+
+
+class k_XmlHandler: public QXmlDefaultHandler
 {
 public:
-	k_MzMlHandler(k_ScanIterator& ak_ScanIterator);
-	virtual ~k_MzMlHandler();
-	
+	k_XmlHandler(k_ScanIterator& ak_ScanIterator);
+	virtual ~k_XmlHandler();
+
 	virtual bool startElement(const QString &namespaceURI, const QString &localName,
 							  const QString &qName, const QXmlAttributes &attributes);
-
-protected:
-	virtual void handleElement(const QString& as_Tag, const tk_XmlAttributes& ak_Attributes, const QString as_Text);
+	virtual bool endElement(const QString &namespaceURI, const QString &localName,
+							const QString &qName);
+	virtual bool characters(const QString &str);
 	
-	RefPtr<r_Scan> mr_pCurrentScan;
-	QString ms_BinaryPrecision;
-	QString ms_BinaryCompression;
-	QString ms_BinaryType;
-	QString ms_PrecursorMz;
-	QString ms_PrecursorIntensity;
-	QString ms_PrecursorChargeState;
+protected:
+	virtual void handleElement(const QString& as_Tag, const tk_XmlAttributes& ak_Attributes, const QString as_Text) = 0;
+	
+	k_ScanIterator& mk_ScanIterator;
+	QList<tk_XmlElement> mk_XmlPath;
+	QList<QString> mk_XmlPathText;
 };

@@ -18,8 +18,8 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <QtCore>
-#include "FastaReader.h"
-#include "FastaWriter.h"
+#include <ptb/FastaReader.h>
+#include <ptb/FastaWriter.h>
 #include "version.h"
 
 

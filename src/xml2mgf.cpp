@@ -18,7 +18,7 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <QtCore>
-#include "MgfWriter.h"
+#include <ptb/MgfWriter.h>
 #include "version.h"
 
 

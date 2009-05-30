@@ -19,8 +19,8 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 #include <QtCore>
-#include "ScanIterator.h"
-#include "RefPtr.h"
+#include <ptb/ScanIterator.h>
+#include <ptb/RefPtr.h>
 
 
 class k_MgfWriter: public k_ScanIterator

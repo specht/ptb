@@ -17,12 +17,12 @@ You should have received a copy of the GNU General Public License
 along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ScanIterator.h"
-#include "MzDataHandler.h"
-#include "MzMlHandler.h"
-#include "MzXmlHandler.h"
-#include "XmlHandler.h"
-#include "ZipFileOrNot.h"
+#include <ptb/ScanIterator.h>
+#include <ptb/MzDataHandler.h>
+#include <ptb/MzMlHandler.h>
+#include <ptb/MzXmlHandler.h>
+#include <ptb/XmlHandler.h>
+#include <ptb/ZipFileOrNot.h>
 
 
 k_ScanIterator::k_ScanIterator(r_ScanType::Enumeration ae_ScanType,

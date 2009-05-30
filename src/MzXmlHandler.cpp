@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "MzXmlHandler.h"
-#include "ScanIterator.h"
+#include <ptb/MzXmlHandler.h>
+#include <ptb/ScanIterator.h>
 
 
 k_MzXmlHandler::k_MzXmlHandler(k_ScanIterator& ak_ScanIterator)

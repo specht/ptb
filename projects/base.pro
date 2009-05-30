@@ -3,7 +3,7 @@ TEMPLATE = app
 CONFIG += debug_and_release console
 
 DEPENDPATH += .
-INCLUDEPATH += .
+INCLUDEPATH += . ../../src/include/
 
 macx {
 	CONFIG -= app_bundle
@@ -28,15 +28,15 @@ DESTDIR = ../../
 QT = core gui xml
 
 HEADERS += \
-	../../src/FastaReader.h \
-	../../src/FastaWriter.h \
-	../../src/MzDataHandler.h \
-	../../src/MzMlHandler.h \
-	../../src/MzXmlHandler.h \
-	../../src/RefPtr.h \
-	../../src/ScanIterator.h \
-	../../src/XmlHandler.h \
-	../../src/ZipFileOrNot.h \
+	../../src/include/ptb/FastaReader.h \
+	../../src/include/ptb/FastaWriter.h \
+	../../src/include/ptb/MzDataHandler.h \
+	../../src/include/ptb/MzMlHandler.h \
+	../../src/include/ptb/MzXmlHandler.h \
+	../../src/include/ptb/RefPtr.h \
+	../../src/include/ptb/ScanIterator.h \
+	../../src/include/ptb/XmlHandler.h \
+	../../src/include/ptb/ZipFileOrNot.h \
 
 SOURCES += \
 	../../src/FastaReader.cpp \

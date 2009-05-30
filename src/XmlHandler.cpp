@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "XmlHandler.h"
+#include <ptb/XmlHandler.h>
 
 
 k_XmlHandler::k_XmlHandler(k_ScanIterator& ak_ScanIterator)

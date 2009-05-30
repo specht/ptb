@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "FastaReader.h"
+#include <ptb/FastaReader.h>
 
 
 k_FastaReader::k_FastaReader(QString as_Path)
