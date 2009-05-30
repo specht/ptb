@@ -30,6 +30,7 @@ QT = core gui xml
 HEADERS += \
 	../../src/include/ptb/FastaReader.h \
 	../../src/include/ptb/FastaWriter.h \
+	../../src/include/ptb/MgfWriter.h \
 	../../src/include/ptb/MzDataHandler.h \
 	../../src/include/ptb/MzMlHandler.h \
 	../../src/include/ptb/MzXmlHandler.h \
@@ -41,6 +42,7 @@ HEADERS += \
 SOURCES += \
 	../../src/FastaReader.cpp \
 	../../src/FastaWriter.cpp \
+	../../src/MgfWriter.cpp \
 	../../src/MzDataHandler.cpp \
 	../../src/MzMlHandler.cpp \
 	../../src/MzXmlHandler.cpp \
