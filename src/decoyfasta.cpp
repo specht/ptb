@@ -48,9 +48,9 @@ void printUsageAndExit()
 	printf("  --keepEnd [int] (default: 1)\n");
 	printf("      specify how many amino acids/nucleotides on the right side of \n");
 	printf("      an entry should be left untouched.\n");
-	printf("  --targetFormat [string] (default: 'target_%%1')\n");
+	printf("  --targetFormat [string] (default: 'target_')\n");
 	printf("      Specify how target ids should be generated.\n");
-	printf("  --decoyFormat [string] (default: 'decoy_%%1')\n");
+	printf("  --decoyFormat [string] (default: 'decoy_')\n");
 	printf("      Specify how decoy ids should be generated.\n");
 	printf("  -o, --output [filename]: specify output filename (default: stdout)\n");
 	printf("  --version\n");
@@ -229,12 +229,12 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
 		else if (lk_Arguments.first() == "--targetFormat")
 		{
 			lk_Arguments.removeFirst();
-			ls_TargetFormat = lk_Arguments.takeFirst();
+			ls_TargetFormat = lk_Arguments.takeFirst() + "%1";
 		} 
 		else if (lk_Arguments.first() == "--decoyFormat")
 		{
 			lk_Arguments.removeFirst();
-			ls_DecoyFormat = lk_Arguments.takeFirst();
+			ls_DecoyFormat = lk_Arguments.takeFirst() + "%1";
 		} 
 		else if (lk_Arguments.first() == "--keepStart")
 		{
