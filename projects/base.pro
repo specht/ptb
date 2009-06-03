@@ -6,6 +6,11 @@ DEPENDPATH += .
 INCLUDEPATH += . ../../src/include/
 
 macx {
+	LIBPATH += /Users/michael/programming/ext/lib
+	INCLUDEPATH += /Users/michael/programming/ext/include
+}
+
+macx {
 	CONFIG -= app_bundle
 	CONFIG += x86
 }
