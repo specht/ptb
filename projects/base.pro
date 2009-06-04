@@ -12,7 +12,7 @@ macx {
 
 macx {
 	CONFIG -= app_bundle
-	CONFIG += x86
+	CONFIG += x86 ppc
 }
 
 LIBS += -lz -lbz2 -lquazip
