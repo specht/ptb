@@ -30,7 +30,7 @@ else {
 
 DESTDIR = ../../
 
-QT = core gui xml
+QT = core xml
 
 HEADERS += \
 	../../src/include/ptb/FastaReader.h \
