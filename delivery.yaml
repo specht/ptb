@@ -7,7 +7,7 @@ projects:
   - projects/stripscans
   - projects/matchpeptides
   - projects/translatedna
-qt: [core, gui, xml, svg]
+qt: [core, xml]
 win32Libs: []
 versionInject:
   src/version.h: |
