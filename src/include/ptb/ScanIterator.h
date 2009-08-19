@@ -147,6 +147,23 @@ struct r_Scan
 };
 
 
+struct r_Peak
+{
+	int mi_PeakIndex;
+	int mi_LeftBorderIndex;
+	int mi_RightBorderIndex;
+	// attention, these are gauss peak m/z and intensity values! yay!
+	double md_PeakMz;
+	double md_PeakIntensity;
+	double md_PeakArea;
+	double md_OutsideBorderMaxIntensity;
+	double md_Snr;
+	double md_GaussA;
+	double md_GaussB;
+	double md_GaussC;
+};
+
+
 class k_ScanIterator
 {
 public:
@@ -158,6 +175,11 @@ public:
 	
 	static void convertValues(QByteArray ak_Data, int ai_Size, int ai_Precision, 
 							  bool ab_NetworkByteOrder, QList<double*>& ak_Targets);
+	static QList<r_Peak> findAllPeaks(r_Spectrum& ar_Spectrum);
+	static void fitGaussian(double* a_, double* b_, double* c_, 
+							 double x0, double y0, 
+							 double x1, double y1, 
+							 double x2, double y2);
 	
 	virtual bool isInterestingScan(r_Scan& ar_Scan);
 	virtual void handleScan(r_Scan& ar_Scan) = 0;

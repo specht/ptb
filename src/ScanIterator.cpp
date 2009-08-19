@@ -177,6 +177,106 @@ void k_ScanIterator::convertValues(QByteArray ak_Data, int ai_Size, int ai_Preci
 }
 
 
+QList<r_Peak> k_ScanIterator::findAllPeaks(r_Spectrum& ar_Spectrum)
+{
+	QList<r_Peak> lk_Results;
+	double ld_LastIntensity = ar_Spectrum.md_IntensityValues_[0];
+	int li_LastDirection = -100;
+	int li_PeakIndex = -1;
+	int li_ValleyIndex = -1;
+	for (int i = 1; i < ar_Spectrum.mi_PeaksCount; ++i)
+	{
+		double ld_ThisIntensity = ar_Spectrum.md_IntensityValues_[i];
+		double ld_Slope = ld_ThisIntensity - ld_LastIntensity;
+		int li_Direction = 0;
+		if (ld_Slope > 0)
+			li_Direction = 1;
+		else if (ld_Slope < 0)
+			li_Direction = -1;
+			
+		if (li_LastDirection >= -1)
+		{
+			if (li_Direction == -1 && li_LastDirection != -1)
+			{
+				// from ascend or equal to descend (peak!)
+				li_PeakIndex = i - 1;
+			}
+			if (li_Direction != -1 && li_LastDirection == -1)
+			{
+				// end of peak
+				if (li_PeakIndex >= 0 && li_ValleyIndex >= 0)
+				{
+					// we now have a good peak
+					r_Peak lr_Peak;
+					lr_Peak.mi_PeakIndex = li_PeakIndex;
+					lr_Peak.mi_LeftBorderIndex = li_ValleyIndex;
+					lr_Peak.mi_RightBorderIndex = i - 1;
+					lr_Peak.md_OutsideBorderMaxIntensity = 1e-15;
+					if (lr_Peak.mi_LeftBorderIndex > 0)
+						lr_Peak.md_OutsideBorderMaxIntensity = std::max<double>(lr_Peak.md_OutsideBorderMaxIntensity, ar_Spectrum.md_IntensityValues_[lr_Peak.mi_LeftBorderIndex - 1]);
+					if (lr_Peak.mi_RightBorderIndex < ar_Spectrum.mi_PeaksCount - 1)
+						lr_Peak.md_OutsideBorderMaxIntensity = std::max<double>(lr_Peak.md_OutsideBorderMaxIntensity, ar_Spectrum.md_IntensityValues_[lr_Peak.mi_RightBorderIndex + 1]);
+					lr_Peak.md_Snr = lr_Peak.md_PeakIntensity / lr_Peak.md_OutsideBorderMaxIntensity;
+					
+					// cut SNR at 10000 max
+					// :UGLY: should not be a magic number
+					if (lr_Peak.md_OutsideBorderMaxIntensity * 10000.0 < lr_Peak.md_PeakIntensity)
+						lr_Peak.md_Snr = 10000.0;
+					
+					fitGaussian(&lr_Peak.md_GaussA, &lr_Peak.md_GaussB, &lr_Peak.md_GaussC,
+								ar_Spectrum.md_MzValues_[lr_Peak.mi_PeakIndex - 1],
+								ar_Spectrum.md_IntensityValues_[lr_Peak.mi_PeakIndex - 1],
+								ar_Spectrum.md_MzValues_[lr_Peak.mi_PeakIndex],
+								ar_Spectrum.md_IntensityValues_[lr_Peak.mi_PeakIndex],
+								ar_Spectrum.md_MzValues_[lr_Peak.mi_PeakIndex + 1],
+								ar_Spectrum.md_IntensityValues_[lr_Peak.mi_PeakIndex + 1]);
+					lr_Peak.md_PeakMz = lr_Peak.md_GaussB;
+					lr_Peak.md_PeakIntensity = lr_Peak.md_GaussA;
+					lr_Peak.md_PeakArea = lr_Peak.md_GaussA * lr_Peak.md_GaussC;
+					lk_Results.push_back(lr_Peak);
+				}
+				li_ValleyIndex = i - 1;
+			}
+			if (li_Direction == 1 && li_LastDirection != 1)
+			{
+				// start of peak
+				li_ValleyIndex = i - 1;
+			}
+		}
+		li_LastDirection = li_Direction;
+		ld_LastIntensity = ld_ThisIntensity;
+	}
+	
+	return lk_Results;
+}
+
+
+void k_ScanIterator::fitGaussian(double* a_, double* b_, double* c_, 
+								  double x0, double y0, 
+								  double x1, double y1, 
+								  double x2, double y2)
+{
+	double A = 2.0 * (x1 - x0);
+	double B = x0 * x0 - x1 * x1;
+	double C = 2.0 * (x2 - x0);
+	double D = x0 * x0 - x2 * x2;
+	double lny0 = log(y0);
+	double lny1 = log(y1);
+	double lny2 = log(y2);
+	double F = lny1 - lny0;
+	double G = lny2 - lny0;
+	double b = (F * D - B * G) / (A * G - F * C);
+	double x0b = x0 - b;
+	double x1b = x1 - b;
+	double d = ((x0b * x0b) - (x1b * x1b)) / (lny1 - lny0);
+	double a = y0 / (exp(-((x0b * x0b) / d)));
+	double c = sqrt(d * 0.5);
+	*a_ = a;
+	*b_ = b;
+	*c_ = c;
+}
+							   
+
 void k_ScanIterator::progressFunction(QString, bool)
 {
 }
