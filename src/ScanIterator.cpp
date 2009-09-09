@@ -216,6 +216,9 @@ QList<r_Peak> k_ScanIterator::findAllPeaks(r_Spectrum& ar_Spectrum)
 						lr_Peak.md_OutsideBorderMaxIntensity = std::max<double>(lr_Peak.md_OutsideBorderMaxIntensity, ar_Spectrum.md_IntensityValues_[lr_Peak.mi_LeftBorderIndex - 1]);
 					if (lr_Peak.mi_RightBorderIndex < ar_Spectrum.mi_PeaksCount - 1)
 						lr_Peak.md_OutsideBorderMaxIntensity = std::max<double>(lr_Peak.md_OutsideBorderMaxIntensity, ar_Spectrum.md_IntensityValues_[lr_Peak.mi_RightBorderIndex + 1]);
+					lr_Peak.md_PeakIntensity = ar_Spectrum.md_IntensityValues_[lr_Peak.mi_PeakIndex];
+					// Attention, this is only the raw intensity from the scan,
+					// it will be replaced by the Gauss intensity a few lines below
 					lr_Peak.md_Snr = lr_Peak.md_PeakIntensity / lr_Peak.md_OutsideBorderMaxIntensity;
 					
 					// cut SNR at 10000 max
