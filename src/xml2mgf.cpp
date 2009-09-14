@@ -24,9 +24,8 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 
 void printUsageAndExit()
 {
-	printf("xml2mgf %s\n", gs_Version.toStdString().c_str());
 	printf("Usage: xml2mgf [options] [spectra files]\n");
-	printf("Spectra files may be mzXML or mzData, optionally zipped (.zip).\n");
+	printf("Spectra files may be mzML, mzXML or mzData, optionally compressed (.gz, .bz2, .zip).\n");
 	printf("Options:\n");
 	printf("  -o, --output [filename]: specify output filename\n");
 	printf("  -b, --batch [n]: create batches of n spectra\n");

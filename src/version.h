@@ -23,4 +23,4 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 // the release manager and its sole purpose is to define the version.
 // All changed will be overwritten. All your base are belong to us!!
 
-QString gs_Version = "trunk";
+QString gs_Version = "master";

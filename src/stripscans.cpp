@@ -26,8 +26,8 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 
 void printUsageAndExit()
 {
-	printf("Usage: stripscans [in path]\n");
-	printf("This tool will strip all MS1 scans from the input file.\n");
+	printf("Usage: stripscans [file]\n");
+	printf("This tool will strip all MS1 scans from the input file and save the results as [file]-no-ms1.mzML\n");
 	printf("Spectra file must be mzML, optionally compressed (.gz, .bz2, .zip).\n");
 	exit(1);
 }
