@@ -86,7 +86,7 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
 	QFile lk_OutputFile;
 	lk_OutputFile.open(stdout, QIODevice::WriteOnly);
 	QString ls_FramesToTranslate = "1,2,3,4,5,6";
-	QString ls_HeaderFormat = "ORF_%%1_%%2_frame%%3";
+	QString ls_HeaderFormat = "ORF_%1_%2_frame%3";
 	
 	// consume options
 	while (!lk_Arguments.empty())
