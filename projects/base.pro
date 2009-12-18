@@ -16,7 +16,7 @@ macx {
 	QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.4
 }
 
-LIBS += -lz -lbz2 -lquazip
+LIBS += -lz -lbz2 -lquazip -lyaml-cpp
 
 CONFIG(debug, debug|release) {
 	OBJECTS_DIR = ../../obj/debug/
@@ -43,6 +43,9 @@ HEADERS += \
 	../../src/include/ptb/RefPtr.h \
 	../../src/include/ptb/ScanIterator.h \
 	../../src/include/ptb/XmlHandler.h \
+    ../../src/Yaml.h \
+    ../../src/YamlEmitter.h \
+    ../../src/YamlParser.h \
 	../../src/include/ptb/ZipFileOrNot.h \
 
 SOURCES += \
@@ -54,7 +57,10 @@ SOURCES += \
 	../../src/MzXmlHandler.cpp \
 	../../src/ScanIterator.cpp \
 	../../src/XmlHandler.cpp \
-	../../src/ZipFileOrNot.cpp \
+    ../../src/Yaml.cpp \
+    ../../src/YamlEmitter.cpp \
+    ../../src/YamlParser.cpp \
+    ../../src/ZipFileOrNot.cpp \
 
 # KFilterBase
 
