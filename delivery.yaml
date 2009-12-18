@@ -4,6 +4,7 @@ projects:
   - projects/xml2mgf
   - projects/checkspectra
   - projects/decoyfasta
+  - projects/groupproteins
   - projects/stripscans
   - projects/matchpeptides
   - projects/translatedna
