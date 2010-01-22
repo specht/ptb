@@ -173,6 +173,18 @@ QString makeDecoy(QString as_Entry, r_DecoyMethod::Enumeration ae_Method)
 			ls_Result += lc_Char;
 		}
 	}
+    // swap every K and R with its predecessor
+    /*
+    for (int i = 1; i < ls_Result.length(); ++i)
+    {
+        if (ls_Result[i] == 'K' || ls_Result[i] == 'R')
+        {
+            QChar lc_Temp = ls_Result.at(i);
+            ls_Result[i] = ls_Result[i - 1];
+            ls_Result[i - 1] = lc_Temp;
+        }
+    }
+    */
 	return ls_Result;
 }
 
