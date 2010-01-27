@@ -40,6 +40,7 @@ QT = core xml
 HEADERS += \
 	../../src/include/ptb/FastaReader.h \
 	../../src/include/ptb/FastaWriter.h \
+	../../src/include/ptb/IsotopeEnvelope.h \
 	../../src/include/ptb/MgfWriter.h \
 	../../src/include/ptb/MzDataHandler.h \
 	../../src/include/ptb/MzMlHandler.h \
@@ -55,6 +56,7 @@ HEADERS += \
 SOURCES += \
 	../../src/FastaReader.cpp \
 	../../src/FastaWriter.cpp \
+	../../src/IsotopeEnvelope.cpp \
 	../../src/MgfWriter.cpp \
 	../../src/MzDataHandler.cpp \
 	../../src/MzMlHandler.cpp \
