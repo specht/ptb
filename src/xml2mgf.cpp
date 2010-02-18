@@ -73,7 +73,7 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
         {
             lk_Arguments.removeFirst();
             QString ls_Ids = lk_Arguments.takeFirst();
-            lk_Ids = ls_Ids.split(QRegExp(",\\s")).toSet();
+            lk_Ids = ls_Ids.split(QRegExp("[,\\s]+")).toSet();
         } 
 		else if (lk_Arguments.first() == "--help")
 		{
