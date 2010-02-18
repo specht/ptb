@@ -41,6 +41,8 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 #define CV_MS_MZ "MS:1000040"
 #define CV_MS_CHARGE_STATE "MS:1000041"
 #define CV_MS_INTENSITY "MS:1000042"
+#define CV_MS_SPECTRUM_REPRESENTATION_CENTROID "MS:1000127"
+#define CV_MS_SPECTRUM_REPRESENTATION_PROFILE "MS:1000128"
 
 
 k_MzMlHandler::k_MzMlHandler(k_ScanIterator& ak_ScanIterator)
@@ -103,6 +105,10 @@ void k_MzMlHandler::handleElement(const QString& as_Tag, const tk_XmlAttributes&
 			mr_pCurrentScan->me_Type = r_ScanType::SICC;
 		else if (ls_Accession == CV_MS_FILTER_STRING)
 			mr_pCurrentScan->ms_FilterLine = ak_Attributes["value"];
+        else if (ls_Accession == CV_MS_SPECTRUM_REPRESENTATION_CENTROID)
+            mr_pCurrentScan->mr_Spectrum.mb_Centroided = true;
+        else if (ls_Accession == CV_MS_SPECTRUM_REPRESENTATION_PROFILE)
+            mr_pCurrentScan->mr_Spectrum.mb_Centroided = false;
 		else if (ls_Accession == CV_MS_RETENTION_TIME)
 		{
 			mr_pCurrentScan->md_RetentionTime = QVariant(ak_Attributes["value"]).toDouble();

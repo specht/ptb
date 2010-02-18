@@ -22,7 +22,7 @@ along with qTrace.  If not, see <http://www.gnu.org/licenses/>.
 
 k_IsotopeEnvelope::k_IsotopeEnvelope(QHash<QString, QList<double> > ak_ModifiedAbundances)
 {
-    Q_INIT_RESOURCE(qtrace);
+    Q_INIT_RESOURCE(ptb);
     
     QFile lk_File(":ext/proteomics-knowledge-base/isotopes.csv");
     if (!lk_File.open(QFile::ReadOnly))

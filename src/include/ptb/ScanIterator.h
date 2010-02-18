@@ -50,6 +50,7 @@ struct r_Spectrum
 		: mi_PeaksCount(0)
 		, md_MzValues_(NULL)
 		, md_IntensityValues_(NULL)
+		, mb_Centroided(false)
 	{
 	};
 	
@@ -57,6 +58,7 @@ struct r_Spectrum
 		: mi_PeaksCount(ar_Other.mi_PeaksCount)
 		, md_MzValues_(NULL)
 		, md_IntensityValues_(NULL)
+		, mb_Centroided(ar_Other.mb_Centroided)
 	{
 		// copy m/z and intensity values, if any
 		if (ar_Other.md_MzValues_)
@@ -88,6 +90,7 @@ struct r_Spectrum
 	int mi_PeaksCount;
 	double* md_MzValues_;
 	double* md_IntensityValues_;
+    bool mb_Centroided;
 };
 
 

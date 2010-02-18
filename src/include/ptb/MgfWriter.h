@@ -31,7 +31,9 @@ public:
 	virtual ~k_MgfWriter();
 	
 	virtual void convert(QStringList ak_SpectraFiles, QString as_OutputPath, 
-						 int ai_BatchSize = 0, QString as_RetentionTimesPath = QString());
+						 int ai_BatchSize = 0, 
+                         QString as_RetentionTimesPath = QString(),
+                         QSet<QString> ak_Ids = QSet<QString>());
 	virtual void handleScan(r_Scan& ar_Scan);
 	
 protected:
@@ -48,4 +50,6 @@ protected:
 	int mi_BatchSize;
 	int mi_PartCounter;
 	int mi_CurrentBatchSize;
+    QSet<QString> mk_Ids;
+    QSet<QString> mk_FoundIds;
 };

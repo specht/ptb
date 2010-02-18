@@ -39,8 +39,14 @@ k_MgfWriter::~k_MgfWriter()
 }
 
 
-void k_MgfWriter::convert(QStringList ak_SpectraFiles, QString as_OutputPath, int ai_BatchSize, QString as_RetentionTimesPath)
+void k_MgfWriter::convert(QStringList ak_SpectraFiles, 
+                          QString as_OutputPath, 
+                          int ai_BatchSize, 
+                          QString as_RetentionTimesPath,
+                          QSet<QString> ak_Ids)
 {
+    mk_Ids = ak_Ids;
+    mk_FoundIds.clear();
 	ms_OutputPath = as_OutputPath;
 	mi_BatchSize = ai_BatchSize;
 	mi_PartCounter = 0;
@@ -74,6 +80,13 @@ void k_MgfWriter::convert(QStringList ak_SpectraFiles, QString as_OutputPath, in
 
 void k_MgfWriter::handleScan(r_Scan& ar_Scan)
 {
+    if (!mk_Ids.empty())
+    {
+        if (!mk_Ids.contains(ar_Scan.ms_Id))
+            return;
+        else
+            mk_FoundIds << ar_Scan.ms_Id;
+    }
 	if (ar_Scan.mr_Spectrum.mi_PeaksCount == 0)
 	{
 		printf("Warning: Empty spectrum (scan #%s @ %1.2f minutes)!\n", ar_Scan.ms_Id.toStdString().c_str(), ar_Scan.md_RetentionTime);

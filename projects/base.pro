@@ -37,6 +37,8 @@ DESTDIR = ../../
 
 QT = core xml
 
+RESOURCES += ../../src/ptb.qrc
+
 HEADERS += \
 	../../src/include/ptb/FastaReader.h \
 	../../src/include/ptb/FastaWriter.h \

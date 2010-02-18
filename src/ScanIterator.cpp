@@ -180,73 +180,99 @@ void k_ScanIterator::convertValues(QByteArray ak_Data, int ai_Size, int ai_Preci
 QList<r_Peak> k_ScanIterator::findAllPeaks(r_Spectrum& ar_Spectrum)
 {
 	QList<r_Peak> lk_Results;
-	double ld_LastIntensity = ar_Spectrum.md_IntensityValues_[0];
-	int li_LastDirection = -100;
-	int li_PeakIndex = -1;
-	int li_ValleyIndex = -1;
-	for (int i = 1; i < ar_Spectrum.mi_PeaksCount; ++i)
-	{
-		double ld_ThisIntensity = ar_Spectrum.md_IntensityValues_[i];
-		double ld_Slope = ld_ThisIntensity - ld_LastIntensity;
-		int li_Direction = 0;
-		if (ld_Slope > 0)
-			li_Direction = 1;
-		else if (ld_Slope < 0)
-			li_Direction = -1;
-			
-		if (li_LastDirection >= -1)
-		{
-			if (li_Direction == -1 && li_LastDirection != -1)
-			{
-				// from ascend or equal to descend (peak!)
-				li_PeakIndex = i - 1;
-			}
-			if (li_Direction != -1 && li_LastDirection == -1)
-			{
-				// end of peak
-				if (li_PeakIndex >= 0 && li_ValleyIndex >= 0)
-				{
-					// we now have a good peak
-					r_Peak lr_Peak;
-					lr_Peak.mi_PeakIndex = li_PeakIndex;
-					lr_Peak.mi_LeftBorderIndex = li_ValleyIndex;
-					lr_Peak.mi_RightBorderIndex = i - 1;
-					lr_Peak.md_OutsideBorderMaxIntensity = 1e-15;
-					lr_Peak.md_OutsideBorderMaxIntensity = std::max<double>(lr_Peak.md_OutsideBorderMaxIntensity, ar_Spectrum.md_IntensityValues_[lr_Peak.mi_LeftBorderIndex]);
-					lr_Peak.md_OutsideBorderMaxIntensity = std::max<double>(lr_Peak.md_OutsideBorderMaxIntensity, ar_Spectrum.md_IntensityValues_[lr_Peak.mi_RightBorderIndex]);
-					// Attention, this is only the raw intensity from the scan,
-					// it will be replaced by the Gauss intensity a few lines below
-					lr_Peak.md_PeakIntensity = ar_Spectrum.md_IntensityValues_[lr_Peak.mi_PeakIndex];
-					lr_Peak.md_Snr = lr_Peak.md_PeakIntensity / lr_Peak.md_OutsideBorderMaxIntensity;
-					
-					// cut SNR at 10000 max
-					// :UGLY: should not be a magic number
-					if (lr_Peak.md_OutsideBorderMaxIntensity * 10000.0 < lr_Peak.md_PeakIntensity)
-						lr_Peak.md_Snr = 10000.0;
-					
-					fitGaussian(&lr_Peak.md_GaussA, &lr_Peak.md_GaussB, &lr_Peak.md_GaussC,
-								ar_Spectrum.md_MzValues_[lr_Peak.mi_PeakIndex - 1],
-								ar_Spectrum.md_IntensityValues_[lr_Peak.mi_PeakIndex - 1],
-								ar_Spectrum.md_MzValues_[lr_Peak.mi_PeakIndex],
-								ar_Spectrum.md_IntensityValues_[lr_Peak.mi_PeakIndex],
-								ar_Spectrum.md_MzValues_[lr_Peak.mi_PeakIndex + 1],
-								ar_Spectrum.md_IntensityValues_[lr_Peak.mi_PeakIndex + 1]);
-					lr_Peak.md_PeakMz = lr_Peak.md_GaussB;
-					lr_Peak.md_PeakIntensity = lr_Peak.md_GaussA;
-					lr_Peak.md_PeakArea = lr_Peak.md_GaussA * lr_Peak.md_GaussC;
-					lk_Results.push_back(lr_Peak);
-				}
-				li_ValleyIndex = i - 1;
-			}
-			if (li_Direction == 1 && li_LastDirection != 1)
-			{
-				// start of peak
-				li_ValleyIndex = i - 1;
-			}
-		}
-		li_LastDirection = li_Direction;
-		ld_LastIntensity = ld_ThisIntensity;
-	}
+    if (ar_Spectrum.mb_Centroided)
+    {
+        // this spectrum is already centroided, just convert them values!
+        for (int i = 0; i < ar_Spectrum.mi_PeaksCount; ++i)
+        {
+            double ld_Mz = ar_Spectrum.md_MzValues_[i];
+            double ld_Intensity = ar_Spectrum.md_IntensityValues_[i];
+            r_Peak lr_Peak;
+            lr_Peak.mi_PeakIndex = i;
+            lr_Peak.mi_LeftBorderIndex = i;
+            lr_Peak.mi_RightBorderIndex = i;
+            lr_Peak.md_PeakMz = ld_Mz;
+            lr_Peak.md_PeakIntensity = ld_Intensity;
+            lr_Peak.md_PeakArea = ld_Intensity;
+            lr_Peak.md_OutsideBorderMaxIntensity = 0;
+            lr_Peak.md_Snr = 9999999.0;
+            lr_Peak.md_GaussA = 1.0;
+            lr_Peak.md_GaussB = 1.0;
+            lr_Peak.md_GaussC = 1.0;
+            lk_Results << lr_Peak;
+        }
+    }
+    else
+    {
+        // a profile mode spectrum, fit Gaussian peaks!
+        double ld_LastIntensity = ar_Spectrum.md_IntensityValues_[0];
+        int li_LastDirection = -100;
+        int li_PeakIndex = -1;
+        int li_ValleyIndex = -1;
+        for (int i = 1; i < ar_Spectrum.mi_PeaksCount; ++i)
+        {
+            double ld_ThisIntensity = ar_Spectrum.md_IntensityValues_[i];
+            double ld_Slope = ld_ThisIntensity - ld_LastIntensity;
+            int li_Direction = 0;
+            if (ld_Slope > 0)
+                li_Direction = 1;
+            else if (ld_Slope < 0)
+                li_Direction = -1;
+                
+            if (li_LastDirection >= -1)
+            {
+                if (li_Direction == -1 && li_LastDirection != -1)
+                {
+                    // from ascend or equal to descend (peak!)
+                    li_PeakIndex = i - 1;
+                }
+                if (li_Direction != -1 && li_LastDirection == -1)
+                {
+                    // end of peak
+                    if (li_PeakIndex >= 0 && li_ValleyIndex >= 0)
+                    {
+                        // we now have a good peak
+                        r_Peak lr_Peak;
+                        lr_Peak.mi_PeakIndex = li_PeakIndex;
+                        lr_Peak.mi_LeftBorderIndex = li_ValleyIndex;
+                        lr_Peak.mi_RightBorderIndex = i - 1;
+                        lr_Peak.md_OutsideBorderMaxIntensity = 1e-15;
+                        lr_Peak.md_OutsideBorderMaxIntensity = std::max<double>(lr_Peak.md_OutsideBorderMaxIntensity, ar_Spectrum.md_IntensityValues_[lr_Peak.mi_LeftBorderIndex]);
+                        lr_Peak.md_OutsideBorderMaxIntensity = std::max<double>(lr_Peak.md_OutsideBorderMaxIntensity, ar_Spectrum.md_IntensityValues_[lr_Peak.mi_RightBorderIndex]);
+                        // Attention, this is only the raw intensity from the scan,
+                        // it will be replaced by the Gauss intensity a few lines below
+                        lr_Peak.md_PeakIntensity = ar_Spectrum.md_IntensityValues_[lr_Peak.mi_PeakIndex];
+                        lr_Peak.md_Snr = lr_Peak.md_PeakIntensity / lr_Peak.md_OutsideBorderMaxIntensity;
+                        
+                        // cut SNR at 10000 max
+                        // :UGLY: should not be a magic number
+                        if (lr_Peak.md_OutsideBorderMaxIntensity * 10000.0 < lr_Peak.md_PeakIntensity)
+                            lr_Peak.md_Snr = 10000.0;
+                        
+                        fitGaussian(&lr_Peak.md_GaussA, &lr_Peak.md_GaussB, &lr_Peak.md_GaussC,
+                                    ar_Spectrum.md_MzValues_[lr_Peak.mi_PeakIndex - 1],
+                                    ar_Spectrum.md_IntensityValues_[lr_Peak.mi_PeakIndex - 1],
+                                    ar_Spectrum.md_MzValues_[lr_Peak.mi_PeakIndex],
+                                    ar_Spectrum.md_IntensityValues_[lr_Peak.mi_PeakIndex],
+                                    ar_Spectrum.md_MzValues_[lr_Peak.mi_PeakIndex + 1],
+                                    ar_Spectrum.md_IntensityValues_[lr_Peak.mi_PeakIndex + 1]);
+                        lr_Peak.md_PeakMz = lr_Peak.md_GaussB;
+                        lr_Peak.md_PeakIntensity = lr_Peak.md_GaussA;
+                        lr_Peak.md_PeakArea = lr_Peak.md_GaussA * lr_Peak.md_GaussC;
+                        lk_Results.push_back(lr_Peak);
+                    }
+                    li_ValleyIndex = i - 1;
+                }
+                if (li_Direction == 1 && li_LastDirection != 1)
+                {
+                    // start of peak
+                    li_ValleyIndex = i - 1;
+                }
+            }
+            li_LastDirection = li_Direction;
+            ld_LastIntensity = ld_ThisIntensity;
+        }
+    }
 	
 	return lk_Results;
 }

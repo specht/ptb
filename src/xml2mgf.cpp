@@ -30,6 +30,8 @@ void printUsageAndExit()
 	printf("  -o, --output [filename]: specify output filename\n");
 	printf("  -b, --batch [n]: create batches of n spectra\n");
 	printf("  -rt, --retentionTimes [filename]: specify an output filename for scan retention times\n");
+    printf("  -i, --id [id list]: specify which scans to extract\n");
+    printf("      Multiple IDs can be separated by spaces or commas.\n");
 	exit(1);
 }
 
@@ -46,9 +48,11 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
 	QString ls_OutputPath = "";
 	QString ls_RetentionTimesPath = "";
 	int li_BatchSize = 0;
+    
+    QSet<QString> lk_Ids;
 	
 	// consume options
-	while (true && !lk_Arguments.empty())
+	while (!lk_Arguments.empty())
 	{
 		if (lk_Arguments.first() == "-o" || lk_Arguments.first() == "--output")
 		{
@@ -65,6 +69,12 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
 			lk_Arguments.removeFirst();
 			ls_RetentionTimesPath = lk_Arguments.takeFirst();
 		} 
+        else if (lk_Arguments.first() == "-i" || lk_Arguments.first() == "--id")
+        {
+            lk_Arguments.removeFirst();
+            QString ls_Ids = lk_Arguments.takeFirst();
+            lk_Ids = ls_Ids.split(QRegExp(",\\s")).toSet();
+        } 
 		else if (lk_Arguments.first() == "--help")
 		{
 			lk_Arguments.removeFirst();
@@ -93,5 +103,5 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
 		lk_SpectraFiles << ls_Path;
 	}
 		
-	lk_MgfWriter.convert(lk_SpectraFiles, ls_OutputPath, li_BatchSize, ls_RetentionTimesPath);
+	lk_MgfWriter.convert(lk_SpectraFiles, ls_OutputPath, li_BatchSize, ls_RetentionTimesPath, lk_Ids);
 }
