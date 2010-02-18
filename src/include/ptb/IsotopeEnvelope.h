@@ -25,12 +25,13 @@ along with qTrace.  If not, see <http://www.gnu.org/licenses/>.
 // list of isotope peaks (starting at A+0):
 //   (abundance, average mass shift)
 typedef QList<QPair<double, double> > tk_IsotopeEnvelope;
+typedef QHash<QString, QList<double> > tk_ModifiedAbundances;
 
 
 class k_IsotopeEnvelope
 {
 public:
-    k_IsotopeEnvelope(QHash<QString, QList<double> > ak_ModifiedAbundances = QHash<QString, QList<double> >());
+    k_IsotopeEnvelope(tk_ModifiedAbundances ak_ModifiedAbundances = tk_ModifiedAbundances());
     virtual ~k_IsotopeEnvelope();
     tk_IsotopeEnvelope isotopeEnvelopeForComposition(QHash<QString, int> ak_Composition);
     tk_IsotopeEnvelope add(const tk_IsotopeEnvelope& ak_First, const tk_IsotopeEnvelope& ak_Second);

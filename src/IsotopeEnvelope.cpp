@@ -20,7 +20,7 @@ along with qTrace.  If not, see <http://www.gnu.org/licenses/>.
 #include "include/ptb/IsotopeEnvelope.h"
 
 
-k_IsotopeEnvelope::k_IsotopeEnvelope(QHash<QString, QList<double> > ak_ModifiedAbundances)
+k_IsotopeEnvelope::k_IsotopeEnvelope(tk_ModifiedAbundances ak_ModifiedAbundances)
 {
     Q_INIT_RESOURCE(ptb);
     
