@@ -25,20 +25,20 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 class k_MzMlHandler: public k_XmlHandler
 {
 public:
-	k_MzMlHandler(k_ScanIterator& ak_ScanIterator);
-	virtual ~k_MzMlHandler();
-	
-	virtual bool startElement(const QString &namespaceURI, const QString &localName,
-							  const QString &qName, const QXmlAttributes &attributes);
+    k_MzMlHandler(k_ScanIterator& ak_ScanIterator);
+    virtual ~k_MzMlHandler();
+    
+    virtual bool startElement(const QString &namespaceURI, const QString &localName,
+                              const QString &qName, const QXmlAttributes &attributes);
 
 protected:
-	virtual void handleElement(const QString& as_Tag, const tk_XmlAttributes& ak_Attributes, const QString as_Text);
-	
-	RefPtr<r_Scan> mr_pCurrentScan;
-	QString ms_BinaryPrecision;
-	QString ms_BinaryCompression;
-	QString ms_BinaryType;
-	QString ms_PrecursorMz;
-	QString ms_PrecursorIntensity;
-	QString ms_PrecursorChargeState;
+    virtual void handleElement(const QString& as_Tag, const tk_XmlAttributes& ak_Attributes, const QString as_Text);
+    
+    RefPtr<r_Scan> mr_pCurrentScan;
+    QString ms_BinaryPrecision;
+    QString ms_BinaryCompression;
+    QString ms_BinaryType;
+    QString ms_PrecursorMz;
+    QString ms_PrecursorIntensity;
+    QString ms_PrecursorChargeState;
 };

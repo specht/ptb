@@ -46,8 +46,8 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 
 
 k_MzMlHandler::k_MzMlHandler(k_ScanIterator& ak_ScanIterator)
-	: k_XmlHandler(ak_ScanIterator)
-	, mr_pCurrentScan(new r_Scan())
+    : k_XmlHandler(ak_ScanIterator)
+    , mr_pCurrentScan(new r_Scan())
 {
 }
 
@@ -58,154 +58,154 @@ k_MzMlHandler::~k_MzMlHandler()
 
 
 bool k_MzMlHandler::startElement(const QString &namespaceURI, const QString &localName,
-								 const QString &qName, const QXmlAttributes &attributes)
+                                 const QString &qName, const QXmlAttributes &attributes)
 {
-	if (qName == "binaryDataArray")
-	{
-		ms_BinaryPrecision = "";
-		ms_BinaryCompression = "";
-		ms_BinaryType = "";
-	}
-	else if (qName == "selectedIon")
-	{
-		ms_PrecursorMz = "";
-		ms_PrecursorIntensity = "0.0";
-		ms_PrecursorChargeState = "";	
-	}
-	else if (qName == "spectrum")
-	{
-		// create a fresh scan
-		mr_pCurrentScan = RefPtr<r_Scan>(new r_Scan());
-	}
-		
-	return k_XmlHandler::startElement(namespaceURI, localName, qName, attributes);
+    if (qName == "binaryDataArray")
+    {
+        ms_BinaryPrecision = "";
+        ms_BinaryCompression = "";
+        ms_BinaryType = "";
+    }
+    else if (qName == "selectedIon")
+    {
+        ms_PrecursorMz = "";
+        ms_PrecursorIntensity = "0.0";
+        ms_PrecursorChargeState = "";   
+    }
+    else if (qName == "spectrum")
+    {
+        // create a fresh scan
+        mr_pCurrentScan = RefPtr<r_Scan>(new r_Scan());
+    }
+        
+    return k_XmlHandler::startElement(namespaceURI, localName, qName, attributes);
 }
 
 
 void k_MzMlHandler::handleElement(const QString& as_Tag, const tk_XmlAttributes& ak_Attributes, const QString as_Text)
 {
-	if (as_Tag == "cvParam")
-	{
-		QString ls_Accession = ak_Attributes["accession"];
-		if (ls_Accession == CV_MS_LEVEL)
-			mr_pCurrentScan->mi_MsLevel = QVariant(ak_Attributes["value"]).toInt();
-		else if (ls_Accession == CV_MS_SCAN_TYPE_MS1)
-			mr_pCurrentScan->me_Type = r_ScanType::MS1;
-		else if (ls_Accession == CV_MS_SCAN_TYPE_MSn)
-			mr_pCurrentScan->me_Type = r_ScanType::MSn;
-		else if (ls_Accession == CV_MS_SCAN_TYPE_CRM)
-			mr_pCurrentScan->me_Type = r_ScanType::CRM;
-		else if (ls_Accession == CV_MS_SCAN_TYPE_SIM)
-			mr_pCurrentScan->me_Type = r_ScanType::SIM;
-		else if (ls_Accession == CV_MS_SCAN_TYPE_SRM)
-			mr_pCurrentScan->me_Type = r_ScanType::SRM;
-		else if (ls_Accession == CV_MS_SCAN_TYPE_PDA)
-			mr_pCurrentScan->me_Type = r_ScanType::PDA;
-		else if (ls_Accession == CV_MS_SCAN_TYPE_SICC)
-			mr_pCurrentScan->me_Type = r_ScanType::SICC;
-		else if (ls_Accession == CV_MS_FILTER_STRING)
-			mr_pCurrentScan->ms_FilterLine = ak_Attributes["value"];
+    if (as_Tag == "cvParam")
+    {
+        QString ls_Accession = ak_Attributes["accession"];
+        if (ls_Accession == CV_MS_LEVEL)
+            mr_pCurrentScan->mi_MsLevel = QVariant(ak_Attributes["value"]).toInt();
+        else if (ls_Accession == CV_MS_SCAN_TYPE_MS1)
+            mr_pCurrentScan->me_Type = r_ScanType::MS1;
+        else if (ls_Accession == CV_MS_SCAN_TYPE_MSn)
+            mr_pCurrentScan->me_Type = r_ScanType::MSn;
+        else if (ls_Accession == CV_MS_SCAN_TYPE_CRM)
+            mr_pCurrentScan->me_Type = r_ScanType::CRM;
+        else if (ls_Accession == CV_MS_SCAN_TYPE_SIM)
+            mr_pCurrentScan->me_Type = r_ScanType::SIM;
+        else if (ls_Accession == CV_MS_SCAN_TYPE_SRM)
+            mr_pCurrentScan->me_Type = r_ScanType::SRM;
+        else if (ls_Accession == CV_MS_SCAN_TYPE_PDA)
+            mr_pCurrentScan->me_Type = r_ScanType::PDA;
+        else if (ls_Accession == CV_MS_SCAN_TYPE_SICC)
+            mr_pCurrentScan->me_Type = r_ScanType::SICC;
+        else if (ls_Accession == CV_MS_FILTER_STRING)
+            mr_pCurrentScan->ms_FilterLine = ak_Attributes["value"];
         else if (ls_Accession == CV_MS_SPECTRUM_REPRESENTATION_CENTROID)
             mr_pCurrentScan->mr_Spectrum.mb_Centroided = true;
         else if (ls_Accession == CV_MS_SPECTRUM_REPRESENTATION_PROFILE)
             mr_pCurrentScan->mr_Spectrum.mb_Centroided = false;
-		else if (ls_Accession == CV_MS_RETENTION_TIME)
-		{
-			mr_pCurrentScan->md_RetentionTime = QVariant(ak_Attributes["value"]).toDouble();
-			if (ak_Attributes.contains("unitAccession"))
-				if (ak_Attributes["unitAccession"] == CV_MS_TIME_UNIT_SECOND)
-					mr_pCurrentScan->md_RetentionTime /= 60.0;
-		}
-		else if (ls_Accession == CV_MS_32_BIT_FLOAT || ls_Accession == CV_MS_64_BIT_FLOAT)
-			ms_BinaryPrecision = ls_Accession;
-		else if (ls_Accession == CV_MS_NO_COMPRESSION || ls_Accession == CV_MS_ZLIB_COMPRESSION)
-			ms_BinaryCompression = ls_Accession;
-		else if (ls_Accession == CV_MS_MZ_ARRAY || ls_Accession == CV_MS_INTENSITY_ARRAY)
-			ms_BinaryType = ls_Accession;
-		else if (ls_Accession == CV_MS_MZ)
-		{
-			if (mk_XmlPath[1].first == "selectedIon")
-				ms_PrecursorMz = ak_Attributes["value"];
-		}
-		else if (ls_Accession == CV_MS_INTENSITY)
-		{
-			if (mk_XmlPath[1].first == "selectedIon")
-				ms_PrecursorIntensity = ak_Attributes["value"];
-		}
-		else if (ls_Accession == CV_MS_CHARGE_STATE)
-		{
-			if (mk_XmlPath[1].first == "selectedIon")
-				ms_PrecursorChargeState = ak_Attributes["value"];
-		}
-	} 
-	else if (as_Tag == "binary")
-	{
-		mr_pCurrentScan->mr_Spectrum.mi_PeaksCount = QVariant(mk_XmlPath[3].second["defaultArrayLength"]).toInt();
-		if (ms_BinaryPrecision.isEmpty() || ms_BinaryCompression.isEmpty() || ms_BinaryType.isEmpty())
-		{
-			// skip this scan, maybe it's a TIC scan or something like that... eew - TIC!
-			return;
-			printf("Warning: missing attributes for binary array of scan %s (got precision: %s, compression: %s, type: %s).\n", 
-				mk_XmlPath[3].second["nativeID"].toStdString().c_str(),
-				ms_BinaryPrecision.toStdString().c_str(),
-				ms_BinaryCompression.toStdString().c_str(),
-				ms_BinaryType.toStdString().c_str());
-			exit(1);
-		}
-		double* ld_Target_;
-		QList<double*> lk_Targets;
-		lk_Targets << ld_Target_;
-			
-		QByteArray lk_Bytes;
-		if (ms_BinaryCompression == CV_MS_NO_COMPRESSION)
-			lk_Bytes = QByteArray::fromBase64(as_Text.toAscii());
-		else
-		{
-			lk_Bytes = QByteArray::fromBase64(as_Text.toAscii());
-			quint32 lui_Length = mr_pCurrentScan->mr_Spectrum.mi_PeaksCount * (ms_BinaryPrecision == CV_MS_32_BIT_FLOAT ? 32 : 64) / 8;
-			bool lb_SystemHasNetworkByteOrder = QSysInfo::ByteOrder == QSysInfo::BigEndian;
-			if (!lb_SystemHasNetworkByteOrder)
-			{
-				quint32 lui_Temp = lui_Length;
-				((unsigned char*)&lui_Length)[0] = ((unsigned char*)&lui_Temp)[3];
-				((unsigned char*)&lui_Length)[1] = ((unsigned char*)&lui_Temp)[2];
-				((unsigned char*)&lui_Length)[2] = ((unsigned char*)&lui_Temp)[1];
-				((unsigned char*)&lui_Length)[3] = ((unsigned char*)&lui_Temp)[0];
-			}
-			QByteArray lk_Length((const char*)&lui_Length, 4);
-			lk_Bytes.prepend(lk_Length);
-			lk_Bytes = qUncompress(lk_Bytes);
-			if (lk_Bytes.isEmpty())
-			{
-				printf("Error: the uncompressed peaks list is empty.\n");
-				exit(1);
-			}
-		}
-		k_ScanIterator::convertValues(lk_Bytes, mr_pCurrentScan->mr_Spectrum.mi_PeaksCount, 
-			ms_BinaryPrecision == CV_MS_32_BIT_FLOAT ? 32 : 64, false, lk_Targets);
-		
-		if (ms_BinaryType == CV_MS_MZ_ARRAY)
-			mr_pCurrentScan->mr_Spectrum.md_MzValues_ = lk_Targets.first();
-		else
-			mr_pCurrentScan->mr_Spectrum.md_IntensityValues_ = lk_Targets.first();
-	}
-	else if (as_Tag == "selectedIon")
-	{
-		mr_pCurrentScan->mk_Precursors.push_back(r_Precursor(
-			QVariant(ms_PrecursorMz).toDouble(), 
-			QVariant(ms_PrecursorIntensity).toDouble(), 
-			QVariant(ms_PrecursorChargeState).toInt()));
-	}
-	else if (as_Tag == "spectrum")
-	{
-		if (mr_pCurrentScan->mr_Spectrum.md_MzValues_ && mr_pCurrentScan->mr_Spectrum.md_IntensityValues_)
-		{
-			mr_pCurrentScan->ms_Id = ak_Attributes["nativeID"];
-			bool lb_Interesting = mk_ScanIterator.isInterestingScan(*(mr_pCurrentScan.get_Pointer()));
-			mk_ScanIterator.progressFunction(mr_pCurrentScan->ms_Id, lb_Interesting);
-			if (lb_Interesting)
-				mk_ScanIterator.handleScan(*(mr_pCurrentScan.get_Pointer()));
-		}
-	}
+        else if (ls_Accession == CV_MS_RETENTION_TIME)
+        {
+            mr_pCurrentScan->md_RetentionTime = QVariant(ak_Attributes["value"]).toDouble();
+            if (ak_Attributes.contains("unitAccession"))
+                if (ak_Attributes["unitAccession"] == CV_MS_TIME_UNIT_SECOND)
+                    mr_pCurrentScan->md_RetentionTime /= 60.0;
+        }
+        else if (ls_Accession == CV_MS_32_BIT_FLOAT || ls_Accession == CV_MS_64_BIT_FLOAT)
+            ms_BinaryPrecision = ls_Accession;
+        else if (ls_Accession == CV_MS_NO_COMPRESSION || ls_Accession == CV_MS_ZLIB_COMPRESSION)
+            ms_BinaryCompression = ls_Accession;
+        else if (ls_Accession == CV_MS_MZ_ARRAY || ls_Accession == CV_MS_INTENSITY_ARRAY)
+            ms_BinaryType = ls_Accession;
+        else if (ls_Accession == CV_MS_MZ)
+        {
+            if (mk_XmlPath[1].first == "selectedIon")
+                ms_PrecursorMz = ak_Attributes["value"];
+        }
+        else if (ls_Accession == CV_MS_INTENSITY)
+        {
+            if (mk_XmlPath[1].first == "selectedIon")
+                ms_PrecursorIntensity = ak_Attributes["value"];
+        }
+        else if (ls_Accession == CV_MS_CHARGE_STATE)
+        {
+            if (mk_XmlPath[1].first == "selectedIon")
+                ms_PrecursorChargeState = ak_Attributes["value"];
+        }
+    } 
+    else if (as_Tag == "binary")
+    {
+        mr_pCurrentScan->mr_Spectrum.mi_PeaksCount = QVariant(mk_XmlPath[3].second["defaultArrayLength"]).toInt();
+        if (ms_BinaryPrecision.isEmpty() || ms_BinaryCompression.isEmpty() || ms_BinaryType.isEmpty())
+        {
+            // skip this scan, maybe it's a TIC scan or something like that... eew - TIC!
+            return;
+            printf("Warning: missing attributes for binary array of scan %s (got precision: %s, compression: %s, type: %s).\n", 
+                mk_XmlPath[3].second["nativeID"].toStdString().c_str(),
+                ms_BinaryPrecision.toStdString().c_str(),
+                ms_BinaryCompression.toStdString().c_str(),
+                ms_BinaryType.toStdString().c_str());
+            exit(1);
+        }
+        double* ld_Target_;
+        QList<double*> lk_Targets;
+        lk_Targets << ld_Target_;
+            
+        QByteArray lk_Bytes;
+        if (ms_BinaryCompression == CV_MS_NO_COMPRESSION)
+            lk_Bytes = QByteArray::fromBase64(as_Text.toAscii());
+        else
+        {
+            lk_Bytes = QByteArray::fromBase64(as_Text.toAscii());
+            quint32 lui_Length = mr_pCurrentScan->mr_Spectrum.mi_PeaksCount * (ms_BinaryPrecision == CV_MS_32_BIT_FLOAT ? 32 : 64) / 8;
+            bool lb_SystemHasNetworkByteOrder = QSysInfo::ByteOrder == QSysInfo::BigEndian;
+            if (!lb_SystemHasNetworkByteOrder)
+            {
+                quint32 lui_Temp = lui_Length;
+                ((unsigned char*)&lui_Length)[0] = ((unsigned char*)&lui_Temp)[3];
+                ((unsigned char*)&lui_Length)[1] = ((unsigned char*)&lui_Temp)[2];
+                ((unsigned char*)&lui_Length)[2] = ((unsigned char*)&lui_Temp)[1];
+                ((unsigned char*)&lui_Length)[3] = ((unsigned char*)&lui_Temp)[0];
+            }
+            QByteArray lk_Length((const char*)&lui_Length, 4);
+            lk_Bytes.prepend(lk_Length);
+            lk_Bytes = qUncompress(lk_Bytes);
+            if (lk_Bytes.isEmpty())
+            {
+                printf("Error: the uncompressed peaks list is empty.\n");
+                exit(1);
+            }
+        }
+        k_ScanIterator::convertValues(lk_Bytes, mr_pCurrentScan->mr_Spectrum.mi_PeaksCount, 
+            ms_BinaryPrecision == CV_MS_32_BIT_FLOAT ? 32 : 64, false, lk_Targets);
+        
+        if (ms_BinaryType == CV_MS_MZ_ARRAY)
+            mr_pCurrentScan->mr_Spectrum.md_MzValues_ = lk_Targets.first();
+        else
+            mr_pCurrentScan->mr_Spectrum.md_IntensityValues_ = lk_Targets.first();
+    }
+    else if (as_Tag == "selectedIon")
+    {
+        mr_pCurrentScan->mk_Precursors.push_back(r_Precursor(
+            QVariant(ms_PrecursorMz).toDouble(), 
+            QVariant(ms_PrecursorIntensity).toDouble(), 
+            QVariant(ms_PrecursorChargeState).toInt()));
+    }
+    else if (as_Tag == "spectrum")
+    {
+        if (mr_pCurrentScan->mr_Spectrum.md_MzValues_ && mr_pCurrentScan->mr_Spectrum.md_IntensityValues_)
+        {
+            mr_pCurrentScan->ms_Id = ak_Attributes["nativeID"];
+            bool lb_Interesting = mk_ScanIterator.isInterestingScan(*(mr_pCurrentScan.get_Pointer()));
+            mk_ScanIterator.progressFunction(mr_pCurrentScan->ms_Id, lb_Interesting);
+            if (lb_Interesting)
+                mk_ScanIterator.handleScan(*(mr_pCurrentScan.get_Pointer()));
+        }
+    }
 }
 

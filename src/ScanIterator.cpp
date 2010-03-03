@@ -26,9 +26,9 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 
 
 k_ScanIterator::k_ScanIterator(r_ScanType::Enumeration ae_ScanType,
-							   QList<tk_IntPair> ak_ScanMsLevels)
-	: me_ScanType(ae_ScanType)
-	, mk_ScanMsLevels(ak_ScanMsLevels)
+                               QList<tk_IntPair> ak_ScanMsLevels)
+    : me_ScanType(ae_ScanType)
+    , mk_ScanMsLevels(ak_ScanMsLevels)
 {
 }
 
@@ -40,35 +40,35 @@ k_ScanIterator::~k_ScanIterator()
 
 void k_ScanIterator::parseFile(QString as_Filename)
 {
-	k_ZipFileOrNot lk_ZipFileOrNot(as_Filename);
-	
-	if (!lk_ZipFileOrNot.device()->open(QIODevice::ReadOnly))
-	{
-		printf("Error: Unable to open %s.\n", as_Filename.toStdString().c_str());
-		return;
-	}
-	
-	RefPtr<k_XmlHandler> lk_pHandler;
-	
-	QString ls_Line;
-	QTextStream lk_Stream(lk_ZipFileOrNot.device());
-	while (ls_Line.trimmed().startsWith("<?") || ls_Line.trimmed().isEmpty())
-		ls_Line = lk_Stream.readLine();
-	if (ls_Line.trimmed().startsWith("<mzXML"))
-		lk_pHandler = RefPtr<k_XmlHandler>(new k_MzXmlHandler(*this));
-	else if (ls_Line.trimmed().startsWith("<mzData"))
-		lk_pHandler = RefPtr<k_XmlHandler>(new k_MzDataHandler(*this));
-	else if (ls_Line.trimmed().startsWith("<mzML") || ls_Line.trimmed().startsWith("<indexedmzML"))
-		lk_pHandler = RefPtr<k_XmlHandler>(new k_MzMlHandler(*this));
-	else
-	{
-		printf("Error: Unable to parse input file %s.\n", as_Filename.toStdString().c_str());
-		return;
-	}
-	
-	// re-open the file, reset() didn't work in some cases, but why?!
-	lk_ZipFileOrNot = k_ZipFileOrNot(as_Filename);
-	lk_ZipFileOrNot.device()->open(QIODevice::ReadOnly);
+    k_ZipFileOrNot lk_ZipFileOrNot(as_Filename);
+    
+    if (!lk_ZipFileOrNot.device()->open(QIODevice::ReadOnly))
+    {
+        printf("Error: Unable to open %s.\n", as_Filename.toStdString().c_str());
+        return;
+    }
+    
+    RefPtr<k_XmlHandler> lk_pHandler;
+    
+    QString ls_Line;
+    QTextStream lk_Stream(lk_ZipFileOrNot.device());
+    while (ls_Line.trimmed().startsWith("<?") || ls_Line.trimmed().isEmpty())
+        ls_Line = lk_Stream.readLine();
+    if (ls_Line.trimmed().startsWith("<mzXML"))
+        lk_pHandler = RefPtr<k_XmlHandler>(new k_MzXmlHandler(*this));
+    else if (ls_Line.trimmed().startsWith("<mzData"))
+        lk_pHandler = RefPtr<k_XmlHandler>(new k_MzDataHandler(*this));
+    else if (ls_Line.trimmed().startsWith("<mzML") || ls_Line.trimmed().startsWith("<indexedmzML"))
+        lk_pHandler = RefPtr<k_XmlHandler>(new k_MzMlHandler(*this));
+    else
+    {
+        printf("Error: Unable to parse input file %s.\n", as_Filename.toStdString().c_str());
+        return;
+    }
+    
+    // re-open the file, reset() didn't work in some cases, but why?!
+    lk_ZipFileOrNot = k_ZipFileOrNot(as_Filename);
+    lk_ZipFileOrNot.device()->open(QIODevice::ReadOnly);
     
     QXmlSimpleReader lk_Reader;
     lk_Reader.setContentHandler(lk_pHandler.get_Pointer());
@@ -80,106 +80,106 @@ void k_ScanIterator::parseFile(QString as_Filename)
 
 bool k_ScanIterator::isInterestingScan(r_Scan& ar_Scan)
 {
-	// check MS level
-	bool lb_GoodMsLevel = false;
-	foreach (tk_IntPair lk_IntPair, mk_ScanMsLevels)
-	{
-		if (ar_Scan.mi_MsLevel >= lk_IntPair.first && ar_Scan.mi_MsLevel <= lk_IntPair.second)
-		{
-			lb_GoodMsLevel = true;
-			break;
-		}
-	}
-	if (!lb_GoodMsLevel)
-		return false;
-		
-	// if we made it until here, check whether scan type is interesting
-	return (ar_Scan.me_Type & me_ScanType) != 0;
+    // check MS level
+    bool lb_GoodMsLevel = false;
+    foreach (tk_IntPair lk_IntPair, mk_ScanMsLevels)
+    {
+        if (ar_Scan.mi_MsLevel >= lk_IntPair.first && ar_Scan.mi_MsLevel <= lk_IntPair.second)
+        {
+            lb_GoodMsLevel = true;
+            break;
+        }
+    }
+    if (!lb_GoodMsLevel)
+        return false;
+        
+    // if we made it until here, check whether scan type is interesting
+    return (ar_Scan.me_Type & me_ScanType) != 0;
 }
 
 
 void k_ScanIterator::convertValues(QByteArray ak_Data, int ai_Size, int ai_Precision, 
-								   bool ab_NetworkByteOrder, QList<double*>& ak_Targets)
+                                   bool ab_NetworkByteOrder, QList<double*>& ak_Targets)
 {
-	for (int i = 0; i < ak_Targets.size(); ++i)
-		ak_Targets[i] = NULL;
-		
-	if (ai_Size <= 0)
-		return;
-		
-	if (!(ai_Precision == 32 || ai_Precision == 64))
-	{
-		printf("Error: Invalid float precision: %d. (must be 32 or 64)\n", ai_Precision);
-		// do you think it's a bit exaggerated here to crash the program?
-		// precision is a touchy subject, after all, isn't it?
-		exit(1);
-	}
-		
-	for (int i = 0; i < ak_Targets.size(); ++i)
-	{
-		ak_Targets[i] = new double[ai_Size];
-		if (!ak_Targets[i])
-		{
-			printf("Error: Out of memory.\n");
-			exit(1);
-		}
-	}
-		
-	const unsigned char* luc_Buffer_ = (const unsigned char*)ak_Data.constData();
-	bool lb_SystemHasNetworkByteOrder = QSysInfo::ByteOrder == QSysInfo::BigEndian;
-	bool lb_NeedSwap = lb_SystemHasNetworkByteOrder ^ ab_NetworkByteOrder;
-	
-	QList<double*> lk_Targets = ak_Targets;
-	
-	for (int li_Offset = 0; li_Offset < ai_Size; ++li_Offset)
-	{
-		for (int li_Target = 0; li_Target < ak_Targets.size(); ++li_Target)
-		{
-			double ld_NextValue;
-			
-			if (ai_Precision == 32)
-			{
-				float lf_Value;
-				memcpy(&lf_Value, luc_Buffer_, 4);
-				luc_Buffer_ += 4;
-				if (lb_NeedSwap)
-				{
-					float lf_Temp = lf_Value;
-					*((unsigned char*)(&lf_Value) + 0) = *((unsigned char*)(&lf_Temp) + 3);
-					*((unsigned char*)(&lf_Value) + 1) = *((unsigned char*)(&lf_Temp) + 2);
-					*((unsigned char*)(&lf_Value) + 2) = *((unsigned char*)(&lf_Temp) + 1);
-					*((unsigned char*)(&lf_Value) + 3) = *((unsigned char*)(&lf_Temp) + 0);
-				}
-				ld_NextValue = (double)lf_Value;
-			}
-			else if (ai_Precision == 64)
-			{
-				memcpy(&ld_NextValue, luc_Buffer_, 8);
-				luc_Buffer_ += 8;
-				if (lb_NeedSwap)
-				{
-					double ld_Temp = ld_NextValue;
-					*((unsigned char*)(&ld_NextValue) + 0) = *((unsigned char*)(&ld_Temp) + 7);
-					*((unsigned char*)(&ld_NextValue) + 1) = *((unsigned char*)(&ld_Temp) + 6);
-					*((unsigned char*)(&ld_NextValue) + 2) = *((unsigned char*)(&ld_Temp) + 5);
-					*((unsigned char*)(&ld_NextValue) + 3) = *((unsigned char*)(&ld_Temp) + 4);
-					*((unsigned char*)(&ld_NextValue) + 4) = *((unsigned char*)(&ld_Temp) + 3);
-					*((unsigned char*)(&ld_NextValue) + 5) = *((unsigned char*)(&ld_Temp) + 2);
-					*((unsigned char*)(&ld_NextValue) + 6) = *((unsigned char*)(&ld_Temp) + 1);
-					*((unsigned char*)(&ld_NextValue) + 7) = *((unsigned char*)(&ld_Temp) + 0);
-				}
-			}
-			
-			*(lk_Targets[li_Target]) = ld_NextValue;
-			++(lk_Targets[li_Target]);
-		}
-	}
+    for (int i = 0; i < ak_Targets.size(); ++i)
+        ak_Targets[i] = NULL;
+        
+    if (ai_Size <= 0)
+        return;
+        
+    if (!(ai_Precision == 32 || ai_Precision == 64))
+    {
+        printf("Error: Invalid float precision: %d. (must be 32 or 64)\n", ai_Precision);
+        // do you think it's a bit exaggerated here to crash the program?
+        // precision is a touchy subject, after all, isn't it?
+        exit(1);
+    }
+        
+    for (int i = 0; i < ak_Targets.size(); ++i)
+    {
+        ak_Targets[i] = new double[ai_Size];
+        if (!ak_Targets[i])
+        {
+            printf("Error: Out of memory.\n");
+            exit(1);
+        }
+    }
+        
+    const unsigned char* luc_Buffer_ = (const unsigned char*)ak_Data.constData();
+    bool lb_SystemHasNetworkByteOrder = QSysInfo::ByteOrder == QSysInfo::BigEndian;
+    bool lb_NeedSwap = lb_SystemHasNetworkByteOrder ^ ab_NetworkByteOrder;
+    
+    QList<double*> lk_Targets = ak_Targets;
+    
+    for (int li_Offset = 0; li_Offset < ai_Size; ++li_Offset)
+    {
+        for (int li_Target = 0; li_Target < ak_Targets.size(); ++li_Target)
+        {
+            double ld_NextValue;
+            
+            if (ai_Precision == 32)
+            {
+                float lf_Value;
+                memcpy(&lf_Value, luc_Buffer_, 4);
+                luc_Buffer_ += 4;
+                if (lb_NeedSwap)
+                {
+                    float lf_Temp = lf_Value;
+                    *((unsigned char*)(&lf_Value) + 0) = *((unsigned char*)(&lf_Temp) + 3);
+                    *((unsigned char*)(&lf_Value) + 1) = *((unsigned char*)(&lf_Temp) + 2);
+                    *((unsigned char*)(&lf_Value) + 2) = *((unsigned char*)(&lf_Temp) + 1);
+                    *((unsigned char*)(&lf_Value) + 3) = *((unsigned char*)(&lf_Temp) + 0);
+                }
+                ld_NextValue = (double)lf_Value;
+            }
+            else if (ai_Precision == 64)
+            {
+                memcpy(&ld_NextValue, luc_Buffer_, 8);
+                luc_Buffer_ += 8;
+                if (lb_NeedSwap)
+                {
+                    double ld_Temp = ld_NextValue;
+                    *((unsigned char*)(&ld_NextValue) + 0) = *((unsigned char*)(&ld_Temp) + 7);
+                    *((unsigned char*)(&ld_NextValue) + 1) = *((unsigned char*)(&ld_Temp) + 6);
+                    *((unsigned char*)(&ld_NextValue) + 2) = *((unsigned char*)(&ld_Temp) + 5);
+                    *((unsigned char*)(&ld_NextValue) + 3) = *((unsigned char*)(&ld_Temp) + 4);
+                    *((unsigned char*)(&ld_NextValue) + 4) = *((unsigned char*)(&ld_Temp) + 3);
+                    *((unsigned char*)(&ld_NextValue) + 5) = *((unsigned char*)(&ld_Temp) + 2);
+                    *((unsigned char*)(&ld_NextValue) + 6) = *((unsigned char*)(&ld_Temp) + 1);
+                    *((unsigned char*)(&ld_NextValue) + 7) = *((unsigned char*)(&ld_Temp) + 0);
+                }
+            }
+            
+            *(lk_Targets[li_Target]) = ld_NextValue;
+            ++(lk_Targets[li_Target]);
+        }
+    }
 }
 
 
 QList<r_Peak> k_ScanIterator::findAllPeaks(r_Spectrum& ar_Spectrum)
 {
-	QList<r_Peak> lk_Results;
+    QList<r_Peak> lk_Results;
     if (ar_Spectrum.mb_Centroided)
     {
         // this spectrum is already centroided, just convert them values!
@@ -273,36 +273,36 @@ QList<r_Peak> k_ScanIterator::findAllPeaks(r_Spectrum& ar_Spectrum)
             ld_LastIntensity = ld_ThisIntensity;
         }
     }
-	
-	return lk_Results;
+    
+    return lk_Results;
 }
 
 
 void k_ScanIterator::fitGaussian(double* a_, double* b_, double* c_, 
-								  double x0, double y0, 
-								  double x1, double y1, 
-								  double x2, double y2)
+                                  double x0, double y0, 
+                                  double x1, double y1, 
+                                  double x2, double y2)
 {
-	double A = 2.0 * (x1 - x0);
-	double B = x0 * x0 - x1 * x1;
-	double C = 2.0 * (x2 - x0);
-	double D = x0 * x0 - x2 * x2;
-	double lny0 = log(y0);
-	double lny1 = log(y1);
-	double lny2 = log(y2);
-	double F = lny1 - lny0;
-	double G = lny2 - lny0;
-	double b = (F * D - B * G) / (A * G - F * C);
-	double x0b = x0 - b;
-	double x1b = x1 - b;
-	double d = ((x0b * x0b) - (x1b * x1b)) / (lny1 - lny0);
-	double a = y0 / (exp(-((x0b * x0b) / d)));
-	double c = sqrt(d * 0.5);
-	*a_ = a;
-	*b_ = b;
-	*c_ = c;
+    double A = 2.0 * (x1 - x0);
+    double B = x0 * x0 - x1 * x1;
+    double C = 2.0 * (x2 - x0);
+    double D = x0 * x0 - x2 * x2;
+    double lny0 = log(y0);
+    double lny1 = log(y1);
+    double lny2 = log(y2);
+    double F = lny1 - lny0;
+    double G = lny2 - lny0;
+    double b = (F * D - B * G) / (A * G - F * C);
+    double x0b = x0 - b;
+    double x1b = x1 - b;
+    double d = ((x0b * x0b) - (x1b * x1b)) / (lny1 - lny0);
+    double a = y0 / (exp(-((x0b * x0b) / d)));
+    double c = sqrt(d * 0.5);
+    *a_ = a;
+    *b_ = b;
+    *c_ = c;
 }
-							   
+                               
 
 void k_ScanIterator::progressFunction(QString, bool)
 {

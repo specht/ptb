@@ -27,13 +27,13 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 class k_ZipFileOrNot
 {
 public:
-	k_ZipFileOrNot(QString as_Path);
-	virtual ~k_ZipFileOrNot();
-	
-	QIODevice* device();
-	
+    k_ZipFileOrNot(QString as_Path);
+    virtual ~k_ZipFileOrNot();
+    
+    QIODevice* device();
+    
 protected:
-	QString ms_Path;
-	RefPtr<QuaZip> mk_pZip;
-	RefPtr<QIODevice> mk_pDevice;
+    QString ms_Path;
+    RefPtr<QuaZip> mk_pZip;
+    RefPtr<QIODevice> mk_pDevice;
 };

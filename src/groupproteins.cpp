@@ -32,27 +32,27 @@ typedef QPair<tk_IntSet, tk_IntList> tk_IntSetIntListPair;
     
 void printUsageAndExit()
 {
-	printf("Usage: groupproteins [options] [infile]\n");
-	printf("Options:\n");
-	printf("  --output [path] (default: stdout)\n");
-	printf("      Redirect YAML output to a file.\n");
-	printf("  --version\n");
-	printf("      Print version and exit.\n");
-	exit(1);
+    printf("Usage: groupproteins [options] [infile]\n");
+    printf("Options:\n");
+    printf("  --output [path] (default: stdout)\n");
+    printf("      Redirect YAML output to a file.\n");
+    printf("  --version\n");
+    printf("      Print version and exit.\n");
+    exit(1);
 }
 
 
 bool stringToBool(QString& as_String)
 {
-	if (as_String == "yes" || as_String == "true" || as_String == "on" || as_String == "enable" || as_String == "enabled")
-		return true;
-	else if (as_String == "no" || as_String == "false" || as_String == "off" || as_String == "disable" || as_String == "disabled")
-		return false;
-	else
-	{
-		printf("Error: unknown boolean value '%s'.\n", as_String.toStdString().c_str());
-		exit(1);
-	}
+    if (as_String == "yes" || as_String == "true" || as_String == "on" || as_String == "enable" || as_String == "enabled")
+        return true;
+    else if (as_String == "no" || as_String == "false" || as_String == "off" || as_String == "disable" || as_String == "disabled")
+        return false;
+    else
+    {
+        printf("Error: unknown boolean value '%s'.\n", as_String.toStdString().c_str());
+        exit(1);
+    }
 };
 
 
@@ -76,37 +76,37 @@ bool compareByGroupPeptideCount(const int a, const int b)
 
 int main(int ai_ArgumentCount, char** ac_Arguments__)
 {
-	QStringList lk_Arguments;
-	for (int i = 1; i < ai_ArgumentCount; ++i)
-		lk_Arguments << ac_Arguments__[i];
-		
-	if (!lk_Arguments.empty() && (lk_Arguments.first() == "--version"))
-	{
-		printf("groupproteins %s\n", gs_Version.toStdString().c_str());
-		exit(0);
-	}
-		
-	RefPtr<QFile> lk_pYamlOutFile;
-	
-	QFile lk_StdOut;
-	lk_StdOut.open(stdout, QIODevice::WriteOnly);
-	QIODevice* lk_YamlDevice_ = &lk_StdOut;
-	
+    QStringList lk_Arguments;
+    for (int i = 1; i < ai_ArgumentCount; ++i)
+        lk_Arguments << ac_Arguments__[i];
+        
+    if (!lk_Arguments.empty() && (lk_Arguments.first() == "--version"))
+    {
+        printf("groupproteins %s\n", gs_Version.toStdString().c_str());
+        exit(0);
+    }
+        
+    RefPtr<QFile> lk_pYamlOutFile;
+    
+    QFile lk_StdOut;
+    lk_StdOut.open(stdout, QIODevice::WriteOnly);
+    QIODevice* lk_YamlDevice_ = &lk_StdOut;
+    
     if (lk_Arguments.empty() || lk_Arguments.first() == "--help")
         printUsageAndExit();
     
-	// consume options
-	int li_Index;
-	
-	li_Index = lk_Arguments.indexOf("--output");
-	if (li_Index > -1)
-	{
-		lk_pYamlOutFile = RefPtr<QFile>(new QFile(lk_Arguments[li_Index + 1]));
-		lk_pYamlOutFile->open(QIODevice::WriteOnly);
-		lk_YamlDevice_ = lk_pYamlOutFile.get_Pointer();
-		lk_Arguments.removeAt(li_Index);
-		lk_Arguments.removeAt(li_Index);
-	}
+    // consume options
+    int li_Index;
+    
+    li_Index = lk_Arguments.indexOf("--output");
+    if (li_Index > -1)
+    {
+        lk_pYamlOutFile = RefPtr<QFile>(new QFile(lk_Arguments[li_Index + 1]));
+        lk_pYamlOutFile->open(QIODevice::WriteOnly);
+        lk_YamlDevice_ = lk_pYamlOutFile.get_Pointer();
+        lk_Arguments.removeAt(li_Index);
+        lk_Arguments.removeAt(li_Index);
+    }
     
     if (lk_Arguments.empty())
         printUsageAndExit();
@@ -255,7 +255,7 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
         }
     }
     
-	QTextStream lk_Stream(lk_YamlDevice_);
+    QTextStream lk_Stream(lk_YamlDevice_);
     lk_Stream << "---\n";
     lk_Stream << "proteinGroups:\n";
     foreach (tk_IntSetIntListPair lk_Pair, lk_ProteinGroupsSorted)

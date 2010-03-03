@@ -25,7 +25,7 @@
 // we don't need that
 #define BZ_NO_STDIO
 extern "C" {
-	#include <bzlib.h>
+    #include <bzlib.h>
 }
 
 #ifdef NEED_BZ2_PREFIX
@@ -160,7 +160,7 @@ KBzip2Filter::Result KBzip2Filter::compress( bool finish )
                 break;
         case BZ_STREAM_END:
                 return KFilterBase::End;
-		break;
+        break;
         default:
                 return KFilterBase::Error;
                 break;

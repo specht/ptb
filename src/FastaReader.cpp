@@ -21,70 +21,70 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 
 
 k_FastaReader::k_FastaReader(QString as_Path)
-	: mk_File(as_Path)
-	, mk_Stream(&mk_File)
-	, mb_HaveNextLine(false)
+    : mk_File(as_Path)
+    , mk_Stream(&mk_File)
+    , mb_HaveNextLine(false)
 {
-	if (!mk_File.open(QIODevice::ReadOnly))
-	{
-		printf("Error: Unable to open %s.\n", as_Path.toStdString().c_str());
-		exit(1);
-	}
+    if (!mk_File.open(QIODevice::ReadOnly))
+    {
+        printf("Error: Unable to open %s.\n", as_Path.toStdString().c_str());
+        exit(1);
+    }
 }
 
 
 k_FastaReader::~k_FastaReader()
 {
-	mk_File.close();
+    mk_File.close();
 }
 
 
 bool k_FastaReader::readEntry(r_FastaEntry* ar_FastaEntry_)
 {
-	ar_FastaEntry_->ms_Id = QString();
-	ar_FastaEntry_->ms_Entry = QString();
-	// fetch lines until we have an id line
-	while (!this->atEnd())
-	{
-		this->readNextLine();
-		if (ms_NextLine.startsWith(">"))
-			break;
-	}
-	
-	if (this->atEnd())
-		return false;
-		
-	// chop off leading '>'
-	ms_NextLine.remove(0, 1);
-	ar_FastaEntry_->ms_Id = ms_NextLine.trimmed();
-	while (!this->atEnd())
-	{
-		this->readNextLine();
-		if (!ms_NextLine.startsWith(">"))
-			ar_FastaEntry_->ms_Entry += ms_NextLine;
-		else
-		{
-			mb_HaveNextLine = true;
-			break;
-		}
-	}
-		
-	return ((!ar_FastaEntry_->ms_Id.isEmpty()) && (!ar_FastaEntry_->ms_Entry.isEmpty()));
+    ar_FastaEntry_->ms_Id = QString();
+    ar_FastaEntry_->ms_Entry = QString();
+    // fetch lines until we have an id line
+    while (!this->atEnd())
+    {
+        this->readNextLine();
+        if (ms_NextLine.startsWith(">"))
+            break;
+    }
+    
+    if (this->atEnd())
+        return false;
+        
+    // chop off leading '>'
+    ms_NextLine.remove(0, 1);
+    ar_FastaEntry_->ms_Id = ms_NextLine.trimmed();
+    while (!this->atEnd())
+    {
+        this->readNextLine();
+        if (!ms_NextLine.startsWith(">"))
+            ar_FastaEntry_->ms_Entry += ms_NextLine;
+        else
+        {
+            mb_HaveNextLine = true;
+            break;
+        }
+    }
+        
+    return ((!ar_FastaEntry_->ms_Id.isEmpty()) && (!ar_FastaEntry_->ms_Entry.isEmpty()));
 }
 
 
 void k_FastaReader::readNextLine()
 {
-	if (mb_HaveNextLine)
-	{
-		mb_HaveNextLine = false;
-		return;
-	}
-	ms_NextLine = mk_Stream.readLine().trimmed();
+    if (mb_HaveNextLine)
+    {
+        mb_HaveNextLine = false;
+        return;
+    }
+    ms_NextLine = mk_Stream.readLine().trimmed();
 }
 
 
 bool k_FastaReader::atEnd()
 {
-	return mk_Stream.atEnd() && (!mb_HaveNextLine);
+    return mk_Stream.atEnd() && (!mb_HaveNextLine);
 }

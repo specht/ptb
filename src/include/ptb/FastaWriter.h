@@ -25,12 +25,12 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 class k_FastaWriter
 {
 public:
-	k_FastaWriter(QIODevice* ak_Device_);
-	virtual ~k_FastaWriter();
-	
-	virtual void writeEntry(r_FastaEntry& ar_FastaEntry);
+    k_FastaWriter(QIODevice* ak_Device_);
+    virtual ~k_FastaWriter();
+    
+    virtual void writeEntry(r_FastaEntry& ar_FastaEntry);
 
 protected:
-	QIODevice* mk_Device_;
-	QTextStream mk_Stream;
+    QIODevice* mk_Device_;
+    QTextStream mk_Stream;
 };

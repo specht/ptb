@@ -23,37 +23,37 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 
 struct r_FastaEntry
 {
-	r_FastaEntry()
-		: ms_Id(QString())
-		, ms_Entry(QString())
-	{
-	}
-	
-	r_FastaEntry(const r_FastaEntry& ar_Other)
-		: ms_Id(ar_Other.ms_Id)
-		, ms_Entry(ar_Other.ms_Entry)
-	{
-	}
-	
-	QString ms_Id;
-	QString ms_Entry;
+    r_FastaEntry()
+        : ms_Id(QString())
+        , ms_Entry(QString())
+    {
+    }
+    
+    r_FastaEntry(const r_FastaEntry& ar_Other)
+        : ms_Id(ar_Other.ms_Id)
+        , ms_Entry(ar_Other.ms_Entry)
+    {
+    }
+    
+    QString ms_Id;
+    QString ms_Entry;
 };
 
 
 class k_FastaReader
 {
 public:
-	k_FastaReader(QString as_Path);
-	virtual ~k_FastaReader();
-	
-	virtual bool readEntry(r_FastaEntry* ar_FastaEntry_);
+    k_FastaReader(QString as_Path);
+    virtual ~k_FastaReader();
+    
+    virtual bool readEntry(r_FastaEntry* ar_FastaEntry_);
 
 protected:
-	virtual void readNextLine();
-	virtual bool atEnd();
-	
-	QFile mk_File;
-	QTextStream mk_Stream;
-	QString ms_NextLine;
-	bool mb_HaveNextLine;
+    virtual void readNextLine();
+    virtual bool atEnd();
+    
+    QFile mk_File;
+    QTextStream mk_Stream;
+    QString ms_NextLine;
+    bool mb_HaveNextLine;
 };

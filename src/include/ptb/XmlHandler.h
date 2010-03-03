@@ -30,19 +30,19 @@ typedef QPair<QString, tk_XmlAttributes> tk_XmlElement;
 class k_XmlHandler: public QXmlDefaultHandler
 {
 public:
-	k_XmlHandler(k_ScanIterator& ak_ScanIterator);
-	virtual ~k_XmlHandler();
+    k_XmlHandler(k_ScanIterator& ak_ScanIterator);
+    virtual ~k_XmlHandler();
 
-	virtual bool startElement(const QString &namespaceURI, const QString &localName,
-							  const QString &qName, const QXmlAttributes &attributes);
-	virtual bool endElement(const QString &namespaceURI, const QString &localName,
-							const QString &qName);
-	virtual bool characters(const QString &str);
-	
+    virtual bool startElement(const QString &namespaceURI, const QString &localName,
+                              const QString &qName, const QXmlAttributes &attributes);
+    virtual bool endElement(const QString &namespaceURI, const QString &localName,
+                            const QString &qName);
+    virtual bool characters(const QString &str);
+    
 protected:
-	virtual void handleElement(const QString& as_Tag, const tk_XmlAttributes& ak_Attributes, const QString as_Text) = 0;
-	
-	k_ScanIterator& mk_ScanIterator;
-	QList<tk_XmlElement> mk_XmlPath;
-	QList<QString> mk_XmlPathText;
+    virtual void handleElement(const QString& as_Tag, const tk_XmlAttributes& ak_Attributes, const QString as_Text) = 0;
+    
+    k_ScanIterator& mk_ScanIterator;
+    QList<tk_XmlElement> mk_XmlPath;
+    QList<QString> mk_XmlPathText;
 };

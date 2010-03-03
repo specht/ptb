@@ -24,14 +24,14 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 class k_MzXmlHandler: public k_XmlHandler
 {
 public:
-	k_MzXmlHandler(k_ScanIterator& ak_ScanIterator);
-	virtual ~k_MzXmlHandler();
-	
-	virtual bool startElement(const QString &namespaceURI, const QString &localName,
-							  const QString &qName, const QXmlAttributes &attributes);
+    k_MzXmlHandler(k_ScanIterator& ak_ScanIterator);
+    virtual ~k_MzXmlHandler();
+    
+    virtual bool startElement(const QString &namespaceURI, const QString &localName,
+                              const QString &qName, const QXmlAttributes &attributes);
 
 protected:
-	virtual void handleElement(const QString& as_Tag, const tk_XmlAttributes& ak_Attributes, const QString as_Text);
-	
-	QList<r_Scan> mk_ScanStack;
+    virtual void handleElement(const QString& as_Tag, const tk_XmlAttributes& ak_Attributes, const QString as_Text);
+    
+    QList<r_Scan> mk_ScanStack;
 };

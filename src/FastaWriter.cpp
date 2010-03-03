@@ -21,25 +21,25 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 
 
 k_FastaWriter::k_FastaWriter(QIODevice* ak_Device_)
-	: mk_Device_(ak_Device_)
-	, mk_Stream(mk_Device_)
+    : mk_Device_(ak_Device_)
+    , mk_Stream(mk_Device_)
 {
 }
 
 
 k_FastaWriter::~k_FastaWriter()
 {
-	mk_Stream.flush();
+    mk_Stream.flush();
 }
 
 
 void k_FastaWriter::writeEntry(r_FastaEntry& ar_FastaEntry)
 {
-	mk_Stream << ">" << ar_FastaEntry.ms_Id << "\n";
-	int li_Index = 0;
-	while (li_Index < ar_FastaEntry.ms_Entry.length())
-	{
-		mk_Stream << ar_FastaEntry.ms_Entry.mid(li_Index, 70) << "\n";
-		li_Index += 70;
-	}
+    mk_Stream << ">" << ar_FastaEntry.ms_Id << "\n";
+    int li_Index = 0;
+    while (li_Index < ar_FastaEntry.ms_Entry.length())
+    {
+        mk_Stream << ar_FastaEntry.ms_Entry.mid(li_Index, 70) << "\n";
+        li_Index += 70;
+    }
 }

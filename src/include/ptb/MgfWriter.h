@@ -26,30 +26,30 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 class k_MgfWriter: public k_ScanIterator
 {
 public:
-	k_MgfWriter(r_ScanType::Enumeration ae_ScanType = r_ScanType::All,
-				QList<tk_IntPair> ak_MsLevels = QList<tk_IntPair>() << tk_IntPair(0, 0x10000));
-	virtual ~k_MgfWriter();
-	
-	virtual void convert(QStringList ak_SpectraFiles, QString as_OutputPath, 
-						 int ai_BatchSize = 0, 
+    k_MgfWriter(r_ScanType::Enumeration ae_ScanType = r_ScanType::All,
+                QList<tk_IntPair> ak_MsLevels = QList<tk_IntPair>() << tk_IntPair(0, 0x10000));
+    virtual ~k_MgfWriter();
+    
+    virtual void convert(QStringList ak_SpectraFiles, QString as_OutputPath, 
+                         int ai_BatchSize = 0, 
                          QString as_RetentionTimesPath = QString(),
                          QSet<QString> ak_Ids = QSet<QString>());
-	virtual void handleScan(r_Scan& ar_Scan);
-	
+    virtual void handleScan(r_Scan& ar_Scan);
+    
 protected:
-	virtual void flushScan(r_Scan& ar_Scan, r_Precursor* ar_Precursor_ = NULL);
-	virtual QString ftos(double ad_Value);
-	
-	QTextStream mk_TextStream;
-	RefPtr<QFile> mk_pFile;
-	QFile* mk_RetentionTimesFile_;
-	QTextStream* mk_RetentionTimesStream_;
-	bool mb_UseInputCharges;
-	QString ms_SpotName;
-	QString ms_OutputPath;
-	int mi_BatchSize;
-	int mi_PartCounter;
-	int mi_CurrentBatchSize;
+    virtual void flushScan(r_Scan& ar_Scan, r_Precursor* ar_Precursor_ = NULL);
+    virtual QString ftos(double ad_Value);
+    
+    QTextStream mk_TextStream;
+    RefPtr<QFile> mk_pFile;
+    QFile* mk_RetentionTimesFile_;
+    QTextStream* mk_RetentionTimesStream_;
+    bool mb_UseInputCharges;
+    QString ms_SpotName;
+    QString ms_OutputPath;
+    int mi_BatchSize;
+    int mi_PartCounter;
+    int mi_CurrentBatchSize;
     QSet<QString> mk_Ids;
     QSet<QString> mk_FoundIds;
 };

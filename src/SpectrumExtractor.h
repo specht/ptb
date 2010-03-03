@@ -25,16 +25,16 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 class k_SpectrumExtractor: public k_ScanIterator
 {
 public:
-	k_SpectrumExtractor();
-	virtual ~k_SpectrumExtractor();
-	
-	virtual void extract(QString as_SpotPath, QSet<QString> lk_IdSet);
-	virtual void handleScan(r_Scan& ar_Scan);
-	virtual void progressFunction(QString as_ScanId, bool ab_InterestingScan);
-	virtual bool isInterestingScan(r_Scan& ar_Scan);
-	
+    k_SpectrumExtractor();
+    virtual ~k_SpectrumExtractor();
+    
+    virtual void extract(QString as_SpotPath, QSet<QString> lk_IdSet);
+    virtual void handleScan(r_Scan& ar_Scan);
+    virtual void progressFunction(QString as_ScanId, bool ab_InterestingScan);
+    virtual bool isInterestingScan(r_Scan& ar_Scan);
+    
 protected:
-	int mi_WarningCounter;
-	int mi_ScanCounter;
-	QSet<QString> mk_IdSet;
+    int mi_WarningCounter;
+    int mi_ScanCounter;
+    QSet<QString> mk_IdSet;
 };

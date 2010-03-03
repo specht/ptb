@@ -19,7 +19,7 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "SpectrumExtractor.h"
 #include <QtCore>
-	
+    
 
 k_SpectrumExtractor::k_SpectrumExtractor()
 {
@@ -33,19 +33,19 @@ k_SpectrumExtractor::~k_SpectrumExtractor()
 
 void k_SpectrumExtractor::extract(QString as_SpotPath, QSet<QString> ak_IdSet)
 {
-	mk_IdSet = ak_IdSet;
-	this->parseFile(as_SpotPath);
+    mk_IdSet = ak_IdSet;
+    this->parseFile(as_SpotPath);
 }
 
 
 void k_SpectrumExtractor::handleScan(r_Scan& ar_Scan)
 {
-	if (ar_Scan.mr_Spectrum.mi_PeaksCount == 0)
-	{
-		printf("Warning: Empty spectrum #%s @ %1.2f minutes.\n", ar_Scan.ms_Id.toStdString().c_str(), ar_Scan.md_RetentionTime);
-		return;
-	}
-	printf("got scan #%s.\n", ar_Scan.ms_Id.toStdString().c_str());
+    if (ar_Scan.mr_Spectrum.mi_PeaksCount == 0)
+    {
+        printf("Warning: Empty spectrum #%s @ %1.2f minutes.\n", ar_Scan.ms_Id.toStdString().c_str(), ar_Scan.md_RetentionTime);
+        return;
+    }
+    printf("got scan #%s.\n", ar_Scan.ms_Id.toStdString().c_str());
 }
 
 
@@ -55,5 +55,5 @@ void k_SpectrumExtractor::progressFunction(QString as_ScanId, bool ab_Interestin
 
 bool k_SpectrumExtractor::isInterestingScan(r_Scan& ar_Scan)
 {
-	return mk_IdSet.contains(ar_Scan.ms_Id);
+    return mk_IdSet.contains(ar_Scan.ms_Id);
 }
