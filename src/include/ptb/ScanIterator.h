@@ -174,6 +174,8 @@ public:
                    QList<tk_IntPair> ak_MsLevels = QList<tk_IntPair>() << tk_IntPair(1, 0x10000));
     virtual ~k_ScanIterator();
     
+    virtual void setScanType(r_ScanType::Enumeration ae_ScanType);
+    virtual void setMsLevels(QList<tk_IntPair> ak_MsLevels);
     virtual void parseFile(QString as_Filename);
     
     static void convertValues(QByteArray ak_Data, int ai_Size, int ai_Precision, 

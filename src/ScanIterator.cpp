@@ -38,6 +38,18 @@ k_ScanIterator::~k_ScanIterator()
 }
 
 
+void k_ScanIterator::setScanType(r_ScanType::Enumeration ae_ScanType)
+{
+    me_ScanType = ae_ScanType;
+}
+
+
+void k_ScanIterator::setMsLevels(QList<tk_IntPair> ak_MsLevels)
+{
+    mk_ScanMsLevels = ak_MsLevels;
+}
+
+
 void k_ScanIterator::parseFile(QString as_Filename)
 {
     k_ZipFileOrNot lk_ZipFileOrNot(as_Filename);

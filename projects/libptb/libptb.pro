@@ -11,3 +11,9 @@ CONFIG(debug, debug|release) {
 }
 
 RESOURCES += ../../src/ptb.qrc
+
+target.path = /usr/local/lib/
+headers.path = /usr/local/include/
+headers.files = ../../src/include/*
+
+INSTALLS += headers target
