@@ -185,7 +185,7 @@ public:
                              double x2, double y2);
     
     virtual bool isInterestingScan(r_Scan& ar_Scan);
-    virtual void handleScan(r_Scan& ar_Scan) = 0;
+    virtual void handleScan(r_Scan& ar_Scan, bool& ab_Continue) = 0;
     virtual void progressFunction(QString as_ScanId, bool ab_InterestingScan);
 
 protected:

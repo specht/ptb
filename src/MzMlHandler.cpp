@@ -60,6 +60,9 @@ k_MzMlHandler::~k_MzMlHandler()
 bool k_MzMlHandler::startElement(const QString &namespaceURI, const QString &localName,
                                  const QString &qName, const QXmlAttributes &attributes)
 {
+    if (mb_Cancelled)
+        return false;
+    
     if (qName == "binaryDataArray")
     {
         ms_BinaryPrecision = "";
@@ -204,7 +207,12 @@ void k_MzMlHandler::handleElement(const QString& as_Tag, const tk_XmlAttributes&
             bool lb_Interesting = mk_ScanIterator.isInterestingScan(*(mr_pCurrentScan.get_Pointer()));
             mk_ScanIterator.progressFunction(mr_pCurrentScan->ms_Id, lb_Interesting);
             if (lb_Interesting)
-                mk_ScanIterator.handleScan(*(mr_pCurrentScan.get_Pointer()));
+            {
+                bool lb_Continue = true;
+                mk_ScanIterator.handleScan(*(mr_pCurrentScan.get_Pointer()), lb_Continue);
+                if (!lb_Continue)
+                    cancelParsing();
+            }
         }
     }
 }

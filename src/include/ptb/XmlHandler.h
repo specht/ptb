@@ -41,8 +41,10 @@ public:
     
 protected:
     virtual void handleElement(const QString& as_Tag, const tk_XmlAttributes& ak_Attributes, const QString as_Text) = 0;
+    virtual void cancelParsing();
     
     k_ScanIterator& mk_ScanIterator;
     QList<tk_XmlElement> mk_XmlPath;
     QList<QString> mk_XmlPathText;
+    bool mb_Cancelled;
 };

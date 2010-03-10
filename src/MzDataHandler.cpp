@@ -36,6 +36,9 @@ k_MzDataHandler::~k_MzDataHandler()
 bool k_MzDataHandler::startElement(const QString &namespaceURI, const QString &localName,
                                    const QString &qName, const QXmlAttributes &attributes)
 {
+    if (mb_Cancelled)
+        return false;
+    
     if (qName == "precursor")
         mr_pScan->mk_Precursors.push_back(r_Precursor());
         
@@ -108,9 +111,14 @@ void k_MzDataHandler::handleElement(const QString& as_Tag, const tk_XmlAttribute
         
         bool lb_InterestingScan = mk_ScanIterator.isInterestingScan(*(mr_pScan.get_Pointer()));
         mk_ScanIterator.progressFunction(mr_pScan->ms_Id, lb_InterestingScan);
-        
+
         if (lb_InterestingScan)
-            mk_ScanIterator.handleScan(*(mr_pScan.get_Pointer()));
+        {
+            bool lb_Continue = true;
+            mk_ScanIterator.handleScan(*(mr_pScan.get_Pointer()), lb_Continue);
+            if (!lb_Continue)
+                cancelParsing();
+        }
         // create a fresh scan
         mr_pScan = RefPtr<r_Scan>(new r_Scan());
     }

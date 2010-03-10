@@ -22,6 +22,7 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 
 k_XmlHandler::k_XmlHandler(k_ScanIterator& ak_ScanIterator)
     : mk_ScanIterator(ak_ScanIterator)
+    , mb_Cancelled(false)
 {
 }
 
@@ -34,6 +35,9 @@ k_XmlHandler::~k_XmlHandler()
 bool k_XmlHandler::startElement(const QString &namespaceURI, const QString &localName,
                                 const QString &qName, const QXmlAttributes &attributes)
 {
+    if (mb_Cancelled)
+        return false;
+    
     tk_XmlAttributes lk_Attributes;
     for (int i = 0; i < attributes.count(); ++i)
         lk_Attributes[attributes.qName(i)] = attributes.value(i);
@@ -48,6 +52,9 @@ bool k_XmlHandler::startElement(const QString &namespaceURI, const QString &loca
 bool k_XmlHandler::endElement(const QString &namespaceURI, const QString &localName,
                               const QString &qName)
 {
+    if (mb_Cancelled)
+        return false;
+    
     this->handleElement(mk_XmlPath.front().first, mk_XmlPath.front().second,
                         mk_XmlPathText.front());
     mk_XmlPathText.pop_front();
@@ -58,6 +65,15 @@ bool k_XmlHandler::endElement(const QString &namespaceURI, const QString &localN
 
 bool k_XmlHandler::characters(const QString &str)
 {
+    if (mb_Cancelled)
+        return false;
+    
     mk_XmlPathText.first() += str;
     return true;
+}
+
+
+void k_XmlHandler::cancelParsing()
+{
+    mb_Cancelled = true;
 }

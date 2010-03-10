@@ -35,6 +35,9 @@ k_MzXmlHandler::~k_MzXmlHandler()
 bool k_MzXmlHandler::startElement(const QString &namespaceURI, const QString &localName,
                                   const QString &qName, const QXmlAttributes &attributes)
 {
+    if (mb_Cancelled)
+        return false;
+    
     if (qName == "scan")
         mk_ScanStack.push_front(r_Scan());
         
@@ -136,7 +139,12 @@ void k_MzXmlHandler::handleElement(const QString& as_Tag, const tk_XmlAttributes
     else if (as_Tag == "scan")
     {
         if (mk_ScanIterator.isInterestingScan(mk_ScanStack.front()))
-            mk_ScanIterator.handleScan(mk_ScanStack.front());
+        {
+            bool lb_Continue = true;
+            mk_ScanIterator.handleScan(mk_ScanStack.front(), lb_Continue);
+            if (!lb_Continue)
+                cancelParsing();
+        }
         mk_ScanStack.pop_front();
     }
 }
