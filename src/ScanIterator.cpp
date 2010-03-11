@@ -189,7 +189,7 @@ void k_ScanIterator::convertValues(QByteArray ak_Data, int ai_Size, int ai_Preci
 }
 
 
-QList<r_Peak> k_ScanIterator::findAllPeaks(r_Spectrum& ar_Spectrum)
+QList<r_Peak> k_ScanIterator::findAllPeaks(r_Spectrum& ar_Spectrum, double ad_MinSnr)
 {
     QList<r_Peak> lk_Results;
     if (ar_Spectrum.mb_Centroided)
@@ -261,17 +261,20 @@ QList<r_Peak> k_ScanIterator::findAllPeaks(r_Spectrum& ar_Spectrum)
                         if (lr_Peak.md_OutsideBorderMaxIntensity * 10000.0 < lr_Peak.md_PeakIntensity)
                             lr_Peak.md_Snr = 10000.0;
                         
-                        fitGaussian(&lr_Peak.md_GaussA, &lr_Peak.md_GaussB, &lr_Peak.md_GaussC,
-                                    ar_Spectrum.md_MzValues_[lr_Peak.mi_PeakIndex - 1],
-                                    ar_Spectrum.md_IntensityValues_[lr_Peak.mi_PeakIndex - 1],
-                                    ar_Spectrum.md_MzValues_[lr_Peak.mi_PeakIndex],
-                                    ar_Spectrum.md_IntensityValues_[lr_Peak.mi_PeakIndex],
-                                    ar_Spectrum.md_MzValues_[lr_Peak.mi_PeakIndex + 1],
-                                    ar_Spectrum.md_IntensityValues_[lr_Peak.mi_PeakIndex + 1]);
-                        lr_Peak.md_PeakMz = lr_Peak.md_GaussB;
-                        lr_Peak.md_PeakIntensity = lr_Peak.md_GaussA;
-                        lr_Peak.md_PeakArea = lr_Peak.md_GaussA * lr_Peak.md_GaussC;
-                        lk_Results.push_back(lr_Peak);
+                        if (lr_Peak.md_Snr >= ad_MinSnr)
+                        {
+                            fitGaussian(&lr_Peak.md_GaussA, &lr_Peak.md_GaussB, &lr_Peak.md_GaussC,
+                                        ar_Spectrum.md_MzValues_[lr_Peak.mi_PeakIndex - 1],
+                                        ar_Spectrum.md_IntensityValues_[lr_Peak.mi_PeakIndex - 1],
+                                        ar_Spectrum.md_MzValues_[lr_Peak.mi_PeakIndex],
+                                        ar_Spectrum.md_IntensityValues_[lr_Peak.mi_PeakIndex],
+                                        ar_Spectrum.md_MzValues_[lr_Peak.mi_PeakIndex + 1],
+                                        ar_Spectrum.md_IntensityValues_[lr_Peak.mi_PeakIndex + 1]);
+                            lr_Peak.md_PeakMz = lr_Peak.md_GaussB;
+                            lr_Peak.md_PeakIntensity = lr_Peak.md_GaussA;
+                            lr_Peak.md_PeakArea = lr_Peak.md_GaussA * lr_Peak.md_GaussC;
+                            lk_Results.push_back(lr_Peak);
+                        }
                     }
                     li_ValleyIndex = i - 1;
                 }

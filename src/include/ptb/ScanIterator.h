@@ -180,7 +180,7 @@ public:
     
     static void convertValues(QByteArray ak_Data, int ai_Size, int ai_Precision, 
                               bool ab_NetworkByteOrder, QList<double*>& ak_Targets);
-    static QList<r_Peak> findAllPeaks(r_Spectrum& ar_Spectrum);
+    static QList<r_Peak> findAllPeaks(r_Spectrum& ar_Spectrum, double ad_MinSnr = 0.0);
     static void fitGaussian(double* a_, double* b_, double* c_, 
                              double x0, double y0, 
                              double x1, double y1, 
