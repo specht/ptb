@@ -23,6 +23,7 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 #include <ptb/MzXmlHandler.h>
 #include <ptb/XmlHandler.h>
 #include <ptb/ZipFileOrNot.h>
+#include <math.h>
 
 
 k_ScanIterator::k_ScanIterator(r_ScanType::Enumeration ae_ScanType,
