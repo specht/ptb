@@ -126,19 +126,6 @@ k_IsotopeEnvelope::isotopeEnvelopeForComposition(QHash<QString, int> ak_Composit
         }
     }
     
-    // normalize maximum to 1.0
-/*    double ld_Maximum = 0.0;
-    typedef QPair<double, double> tk_DoublePair;
-    foreach (tk_DoublePair lk_Pair, lk_Result)
-        if (lk_Pair.first > ld_Maximum)
-            ld_Maximum = lk_Pair.first;
-        
-    for (int i = 0; i < lk_Result.size(); ++i)
-        lk_Result[i].first /= ld_Maximum;
-    
-    while ((!lk_Result.empty()) && (lk_Result.last().second < 0.001))
-        lk_Result.takeLast();*/
-    
     return lk_Result;
 }
 

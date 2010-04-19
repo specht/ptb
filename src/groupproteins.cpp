@@ -38,6 +38,11 @@ void printUsageAndExit()
     printf("      Redirect YAML output to a file.\n");
     printf("  --version\n");
     printf("      Print version and exit.\n");
+    printf("Input format (YAML):\n");
+    printf("peptides: [A, B, C]\n");
+    printf("proteins: [1, 2, 3]\n");
+    printf("peptidesForProtein: {0: [0, 1], 1: [1]}\n");
+
     exit(1);
 }
 
@@ -120,7 +125,7 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
     }
     
     tk_YamlMap lk_Info = k_Yaml::parseFromFile(ls_Path).toMap();
-    if (!(lk_Info.contains("peptides") && lk_Info.contains("proteins")))
+    if (!(lk_Info.contains("peptides") && lk_Info.contains("proteins") && lk_Info.contains("peptidesForProtein")))
     {
         printf("Error: Input file does not contain peptide and protein information!\n");
         exit(1);
