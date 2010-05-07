@@ -7,7 +7,7 @@ VERSION = 0.1.0
 
 TARGET = ptb
 CONFIG(debug, debug|release) {
-	TARGET = $$join(TARGET,,,_debug)
+    TARGET = $$join(TARGET,,,_debug)
 }
 
 RESOURCES += ../../src/ptb.qrc

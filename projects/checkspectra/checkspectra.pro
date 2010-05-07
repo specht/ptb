@@ -2,12 +2,12 @@ include(../base.pro)
 
 TARGET = checkspectra
 CONFIG(debug, debug|release) {
-	TARGET = $$join(TARGET,,,_debug)
+    TARGET = $$join(TARGET,,,_debug)
 }
 
 HEADERS += \
-	../../src/SpectrumChecker.h \
+    ../../src/SpectrumChecker.h \
 
 SOURCES += \
-	../../src/SpectrumChecker.cpp \
-	../../src/checkspectra.cpp \
+    ../../src/SpectrumChecker.cpp \
+    ../../src/checkspectra.cpp \

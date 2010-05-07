@@ -2,8 +2,8 @@ include(../base.pro)
 
 TARGET = decoyfasta
 CONFIG(debug, debug|release) {
-	TARGET = $$join(TARGET,,,_debug)
+    TARGET = $$join(TARGET,,,_debug)
 }
 
 SOURCES += \
-	../../src/decoyfasta.cpp \
+    ../../src/decoyfasta.cpp \
