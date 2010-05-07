@@ -21,7 +21,6 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 #include <QtCore>
 #include <quazip/quazip.h>
 #include <quazip/quazipfile.h>
-#include <ptb/RefPtr.h>
 
 
 class k_ZipFileOrNot
@@ -34,6 +33,6 @@ public:
     
 protected:
     QString ms_Path;
-    RefPtr<QuaZip> mk_pZip;
-    RefPtr<QIODevice> mk_pDevice;
+    QSharedPointer<QuaZip> mk_pZip;
+    QSharedPointer<QIODevice> mk_pDevice;
 };

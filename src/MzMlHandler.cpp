@@ -78,7 +78,7 @@ bool k_MzMlHandler::startElement(const QString &namespaceURI, const QString &loc
     else if (qName == "spectrum")
     {
         // create a fresh scan
-        mr_pCurrentScan = RefPtr<r_Scan>(new r_Scan());
+        mr_pCurrentScan = QSharedPointer<r_Scan>(new r_Scan());
     }
         
     return k_XmlHandler::startElement(namespaceURI, localName, qName, attributes);
@@ -204,12 +204,12 @@ void k_MzMlHandler::handleElement(const QString& as_Tag, const tk_XmlAttributes&
         if (mr_pCurrentScan->mr_Spectrum.md_MzValues_ && mr_pCurrentScan->mr_Spectrum.md_IntensityValues_)
         {
             mr_pCurrentScan->ms_Id = ak_Attributes["nativeID"];
-            bool lb_Interesting = mk_ScanIterator.isInterestingScan(*(mr_pCurrentScan.get_Pointer()));
+            bool lb_Interesting = mk_ScanIterator.isInterestingScan(*(mr_pCurrentScan.data()));
             mk_ScanIterator.progressFunction(mr_pCurrentScan->ms_Id, lb_Interesting);
             if (lb_Interesting)
             {
                 bool lb_Continue = true;
-                mk_ScanIterator.handleScan(*(mr_pCurrentScan.get_Pointer()), lb_Continue);
+                mk_ScanIterator.handleScan(*(mr_pCurrentScan.data()), lb_Continue);
                 if (!lb_Continue)
                     cancelParsing();
             }

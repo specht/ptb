@@ -81,7 +81,7 @@ void k_MzDataHandler::handleElement(const QString& as_Tag, const tk_XmlAttribute
             mr_pScan->mk_Precursors.last().mi_ChargeState = QVariant(ak_Attributes["value"]).toInt();
         }
     }
-    else if (as_Tag == "data" && mk_ScanIterator.isInterestingScan(*(mr_pScan.get_Pointer())))
+    else if (as_Tag == "data" && mk_ScanIterator.isInterestingScan(*(mr_pScan.data())))
     {
         int li_PeaksCount = 0;
         double* ld_Values_;
@@ -109,17 +109,17 @@ void k_MzDataHandler::handleElement(const QString& as_Tag, const tk_XmlAttribute
     {
         mr_pScan->ms_Id = ak_Attributes["id"];
         
-        bool lb_InterestingScan = mk_ScanIterator.isInterestingScan(*(mr_pScan.get_Pointer()));
+        bool lb_InterestingScan = mk_ScanIterator.isInterestingScan(*(mr_pScan.data()));
         mk_ScanIterator.progressFunction(mr_pScan->ms_Id, lb_InterestingScan);
 
         if (lb_InterestingScan)
         {
             bool lb_Continue = true;
-            mk_ScanIterator.handleScan(*(mr_pScan.get_Pointer()), lb_Continue);
+            mk_ScanIterator.handleScan(*(mr_pScan.data()), lb_Continue);
             if (!lb_Continue)
                 cancelParsing();
         }
         // create a fresh scan
-        mr_pScan = RefPtr<r_Scan>(new r_Scan());
+        mr_pScan = QSharedPointer<r_Scan>(new r_Scan());
     }
 }

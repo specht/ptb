@@ -61,18 +61,18 @@ void k_ScanIterator::parseFile(QString as_Filename)
         return;
     }
     
-    RefPtr<k_XmlHandler> lk_pHandler;
+    QSharedPointer<k_XmlHandler> lk_pHandler;
     
     QString ls_Line;
     QTextStream lk_Stream(lk_ZipFileOrNot.device());
     while (ls_Line.trimmed().startsWith("<?") || ls_Line.trimmed().isEmpty())
         ls_Line = lk_Stream.readLine();
     if (ls_Line.trimmed().startsWith("<mzXML"))
-        lk_pHandler = RefPtr<k_XmlHandler>(new k_MzXmlHandler(*this));
+        lk_pHandler = QSharedPointer<k_XmlHandler>(new k_MzXmlHandler(*this));
     else if (ls_Line.trimmed().startsWith("<mzData"))
-        lk_pHandler = RefPtr<k_XmlHandler>(new k_MzDataHandler(*this));
+        lk_pHandler = QSharedPointer<k_XmlHandler>(new k_MzDataHandler(*this));
     else if (ls_Line.trimmed().startsWith("<mzML") || ls_Line.trimmed().startsWith("<indexedmzML"))
-        lk_pHandler = RefPtr<k_XmlHandler>(new k_MzMlHandler(*this));
+        lk_pHandler = QSharedPointer<k_XmlHandler>(new k_MzMlHandler(*this));
     else
     {
         printf("Error: Unable to parse input file %s.\n", as_Filename.toStdString().c_str());
@@ -84,7 +84,7 @@ void k_ScanIterator::parseFile(QString as_Filename)
     lk_ZipFileOrNot.device()->open(QIODevice::ReadOnly);
     
     QXmlSimpleReader lk_Reader;
-    lk_Reader.setContentHandler(lk_pHandler.get_Pointer());
+    lk_Reader.setContentHandler(lk_pHandler.data());
     
     QXmlInputSource lk_InputSource(lk_ZipFileOrNot.device());
     lk_Reader.parse(&lk_InputSource);

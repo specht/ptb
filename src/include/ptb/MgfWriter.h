@@ -20,7 +20,6 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 #include <QtCore>
 #include <ptb/ScanIterator.h>
-#include <ptb/RefPtr.h>
 
 
 class k_MgfWriter: public k_ScanIterator
@@ -41,7 +40,7 @@ protected:
     virtual QString ftos(double ad_Value);
     
     QTextStream mk_TextStream;
-    RefPtr<QFile> mk_pFile;
+    QSharedPointer<QFile> mk_pFile;
     QFile* mk_RetentionTimesFile_;
     QTextStream* mk_RetentionTimesStream_;
     bool mb_UseInputCharges;

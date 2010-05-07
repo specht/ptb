@@ -113,13 +113,13 @@ void k_MgfWriter::flushScan(r_Scan& ar_Scan, r_Precursor* ar_Precursor_)
             ++mi_PartCounter;
             mi_CurrentBatchSize = 0;
         }
-        mk_pFile = RefPtr<QFile>(new QFile(ls_Filename));
+        mk_pFile = QSharedPointer<QFile>(new QFile(ls_Filename));
         if (!mk_pFile->open(QIODevice::WriteOnly))
         {
             printf("Error: Unable to open %s for writing.\n", ls_Filename.toStdString().c_str());
             exit(1);
         }
-        mk_TextStream.setDevice(mk_pFile.get_Pointer());
+        mk_TextStream.setDevice(mk_pFile.data());
     }
     if (mk_RetentionTimesStream_)
         *mk_RetentionTimesStream_ << ms_SpotName << "." << ar_Scan.ms_Id << ": " << ar_Scan.md_RetentionTime << "\n";

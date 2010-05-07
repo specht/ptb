@@ -19,7 +19,6 @@ along with SimQuant.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 #include <ptb/XmlHandler.h>
-#include <ptb/RefPtr.h>
 
 
 class k_MzDataHandler: public k_XmlHandler
@@ -34,5 +33,5 @@ public:
 protected:
     virtual void handleElement(const QString& as_Tag, const tk_XmlAttributes& ak_Attributes, const QString as_Text);
     
-    RefPtr<r_Scan> mr_pScan;
+    QSharedPointer<r_Scan> mr_pScan;
 };

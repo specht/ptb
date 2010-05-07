@@ -91,7 +91,7 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
         exit(0);
     }
         
-    RefPtr<QFile> lk_pYamlOutFile;
+    QSharedPointer<QFile> lk_pYamlOutFile;
     
     QFile lk_StdOut;
     lk_StdOut.open(stdout, QIODevice::WriteOnly);
@@ -106,9 +106,9 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
     li_Index = lk_Arguments.indexOf("--output");
     if (li_Index > -1)
     {
-        lk_pYamlOutFile = RefPtr<QFile>(new QFile(lk_Arguments[li_Index + 1]));
+        lk_pYamlOutFile = QSharedPointer<QFile>(new QFile(lk_Arguments[li_Index + 1]));
         lk_pYamlOutFile->open(QIODevice::WriteOnly);
-        lk_YamlDevice_ = lk_pYamlOutFile.get_Pointer();
+        lk_YamlDevice_ = lk_pYamlOutFile.data();
         lk_Arguments.removeAt(li_Index);
         lk_Arguments.removeAt(li_Index);
     }
