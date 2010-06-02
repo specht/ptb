@@ -33,7 +33,7 @@ public:
                          int ai_BatchSize = 0, 
                          QString as_RetentionTimesPath = QString(),
                          QSet<QString> ak_Ids = QSet<QString>());
-    virtual void handleScan(r_Scan& ar_Scan);
+    virtual void handleScan(r_Scan& ar_Scan, bool& ab_Continue);
     
 protected:
     virtual void flushScan(r_Scan& ar_Scan, r_Precursor* ar_Precursor_ = NULL);

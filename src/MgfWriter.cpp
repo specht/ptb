@@ -78,8 +78,9 @@ void k_MgfWriter::convert(QStringList ak_SpectraFiles,
 }
 
 
-void k_MgfWriter::handleScan(r_Scan& ar_Scan)
+void k_MgfWriter::handleScan(r_Scan& ar_Scan, bool& ab_Continue)
 {
+    ab_Continue = true;
     if (!mk_Ids.empty())
     {
         if (!mk_Ids.contains(ar_Scan.ms_Id))
