@@ -29,7 +29,7 @@ public:
     virtual ~k_SpectrumChecker();
     
     virtual void check(QStringList ak_SpectraFiles);
-    virtual void handleScan(r_Scan& ar_Scan);
+    virtual void handleScan(r_Scan& ar_Scan, bool& ab_Continue);
     virtual void progressFunction(QString as_ScanId, bool ab_InterestingScan);
     
 protected:
