@@ -19,7 +19,6 @@ along with Proteomics Toolbox.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QtCore>
 #include <stdio.h>
-#include <ptb/RefPtr.h>
 #include "version.h"
 #include "Yaml.h"
 
@@ -274,7 +273,7 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
                 lk_Stream << "  ";
             lb_First = false;
             
-            lk_Stream << "- \"" << lk_ProteinNames[li_ProteinIndex] << "\"\n";
+            lk_Stream << "- \"" << lk_ProteinNames[li_ProteinIndex].replace("\"", "\\\"") << "\"\n";
         }
     }
     
