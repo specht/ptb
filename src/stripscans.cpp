@@ -40,6 +40,8 @@ void printUsageAndExit()
     fprintf(stderr, "  --keepScanIds <path> (optional)\n");
     fprintf(stderr, "      Keep all scans specified in a text file located at <path>.\n");
     fprintf(stderr, "      Cannot be used together with --stripScanIds.\n");
+    fprintf(stderr, "  --quiet\n");
+    fprintf(stderr, "      Don't print status messages.\n");
     exit(1);
 }
 
@@ -111,6 +113,7 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
     QSet<int> lk_ScanIds;
     bool lb_StripIds = false;
     bool lb_KeepIds = false;
+    bool lb_Quiet = false;
     
     // parse arguments
     while (!lk_Arguments.empty())
@@ -172,6 +175,8 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
             }
             lk_OutStream.setDevice(lk_pOutputFile.data());
         }
+        else if (ls_Argument == "--quiet")
+            lb_Quiet = true;
         else
         {
             lk_Arguments.insert(0, ls_Argument); // PUSH argument back, it must be a filename
@@ -185,29 +190,32 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
         exit(1);
     }
     
-    if (!lk_StripMsLevels.empty())
+    if (!lb_Quiet)
     {
-        QList<int> lk_Levels = lk_StripMsLevels.toList();
-        qSort(lk_Levels);
-        fprintf(stderr, "Stripping MS level%s ",
-               lk_StripMsLevels.size() == 1 ? "" : "s");
-        foreach (int li_Level, lk_Levels)
+        if (!lk_StripMsLevels.empty())
         {
-            if (li_Level != lk_Levels.first())
+            QList<int> lk_Levels = lk_StripMsLevels.toList();
+            qSort(lk_Levels);
+            fprintf(stderr, "Stripping MS level%s ",
+                lk_StripMsLevels.size() == 1 ? "" : "s");
+            foreach (int li_Level, lk_Levels)
             {
-                if (li_Level == lk_Levels.last())
-                    fprintf(stderr, " and ");
-                else
-                    fprintf(stderr, ", ");
+                if (li_Level != lk_Levels.first())
+                {
+                    if (li_Level == lk_Levels.last())
+                        fprintf(stderr, " and ");
+                    else
+                        fprintf(stderr, ", ");
+                }
+                fprintf(stderr, "%d", li_Level);
             }
-            fprintf(stderr, "%d", li_Level);
+            fprintf(stderr, ".\n");
         }
-        fprintf(stderr, ".\n");
-    }
-    if (lb_KeepIds || lb_StripIds)
-    {
-        fprintf(stderr, lb_KeepIds ? "Keeping" : "Stripping");
-        fprintf(stderr, " %d scan IDs.\n", lk_ScanIds.size());
+        if (lb_KeepIds || lb_StripIds)
+        {
+            fprintf(stderr, lb_KeepIds ? "Keeping" : "Stripping");
+            fprintf(stderr, " %d scan IDs.\n", lk_ScanIds.size());
+        }    
     }
 
     if (lk_Arguments.empty())
@@ -261,21 +269,6 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
             // determine scan ms level
             bool lb_PrintThisSpectrum = true;
             // reject certain MS levels
-            int li_Index = ls_SpectrumString.indexOf("MS:1000511");
-            if (li_Index > 0)
-            {
-                int li_Start = ls_SpectrumString.lastIndexOf("<cvParam", li_Index);
-                int li_End = ls_SpectrumString.indexOf(">", li_Index);
-                QString ls_CvParam = ls_SpectrumString.mid(li_Start, li_End - li_Start + 1);
-                QRegExp lk_RegExp("(value=\")([^\"]+)(\")");
-                if (lk_RegExp.indexIn(ls_CvParam) > -1)
-                {
-                    QString ls_Level = lk_RegExp.cap(2);
-                    int li_Level = ls_Level.toInt();
-                    if (lk_StripMsLevels.contains(li_Level))
-                        lb_PrintThisSpectrum = false;
-                }
-            }
             if (lb_KeepIds || lb_StripIds)
             {
                 lb_PrintThisSpectrum = lb_StripIds;
@@ -306,6 +299,21 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
                             }
                         }
                     }
+                }
+            }
+            int li_Index = ls_SpectrumString.indexOf("MS:1000511");
+            if (li_Index > 0)
+            {
+                int li_Start = ls_SpectrumString.lastIndexOf("<cvParam", li_Index);
+                int li_End = ls_SpectrumString.indexOf(">", li_Index);
+                QString ls_CvParam = ls_SpectrumString.mid(li_Start, li_End - li_Start + 1);
+                QRegExp lk_RegExp("(value=\")([^\"]+)(\")");
+                if (lk_RegExp.indexIn(ls_CvParam) > -1)
+                {
+                    QString ls_Level = lk_RegExp.cap(2);
+                    int li_Level = ls_Level.toInt();
+                    if (lk_StripMsLevels.contains(li_Level))
+                        lb_PrintThisSpectrum = false;
                 }
             }
             if (lb_PrintThisSpectrum)
