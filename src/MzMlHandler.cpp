@@ -203,7 +203,19 @@ void k_MzMlHandler::handleElement(const QString& as_Tag, const tk_XmlAttributes&
     {
         if (mr_pCurrentScan->mr_Spectrum.md_MzValues_ && mr_pCurrentScan->mr_Spectrum.md_IntensityValues_)
         {
-            mr_pCurrentScan->ms_Id = ak_Attributes["nativeID"];
+            if (ak_Attributes.contains("nativeID"))
+                mr_pCurrentScan->ms_Id = ak_Attributes["nativeID"];
+            else
+            {
+                QString ls_Id = ak_Attributes["id"];
+                QStringList lk_Id = ls_Id.split(" ");
+                foreach (QString ls_Pair, lk_Id)
+                {
+                    QStringList lk_Pair = ls_Pair.split("=");
+                    if (lk_Pair[0].trimmed() == "scan")
+                        mr_pCurrentScan->ms_Id = lk_Pair[1].trimmed();
+                }
+            }
             bool lb_Interesting = mk_ScanIterator.isInterestingScan(*(mr_pCurrentScan.data()));
             mk_ScanIterator.progressFunction(mr_pCurrentScan->ms_Id, lb_Interesting);
             if (lb_Interesting)

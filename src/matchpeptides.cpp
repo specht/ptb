@@ -20,7 +20,6 @@ along with Proteomics Toolbox.  If not, see <http://www.gnu.org/licenses/>.
 #include <QtCore>
 #include <stdio.h>
 #include <ptb/FastaReader.h>
-#include <ptb/RefPtr.h>
 #include "version.h"
 
 
