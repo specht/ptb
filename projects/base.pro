@@ -16,11 +16,9 @@ macx {
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.4
 }
 
-linux {
-    CONFIG += static
-}
-
 LIBS += -lz -lbz2 -lquazip -lyaml-cpp
+
+
 
 CONFIG(debug, debug|release) {
     OBJECTS_DIR = ../../obj/debug/
@@ -34,6 +32,13 @@ else {
 }
 
 DESTDIR = ../../
+
+unix {
+    CONFIG += static
+    QMAKE_LFLAGS += -L/usr/local/lib
+    LIBS += -ldl -lrt
+    message("STATIC LINKAGE")
+}
 
 QT = core xml
 
