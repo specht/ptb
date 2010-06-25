@@ -33,7 +33,7 @@ else {
 
 DESTDIR = ../../
 
-unix {
+linux-g++ {
     CONFIG += static
     QMAKE_LFLAGS += -L/usr/local/lib
     LIBS += -ldl -lrt
