@@ -52,6 +52,8 @@ void printUsageAndExit()
     printf("      Specify how target ids should be generated.\n");
     printf("  --decoyFormat [string] (default: 'decoy_')\n");
     printf("      Specify how decoy ids should be generated.\n");
+    printf("  --decoyAmount [int] (default: 1)\n");
+    printf("      Specify how many decoys should be generated for every target.\n");
     printf("  -o, --output [filename]: specify output filename (default: stdout)\n");
     printf("  --version\n");
     printf("      Print version and exit.\n");
@@ -211,6 +213,7 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
     int li_KeepEnd = 1;
     QString ls_TargetFormat = "target_%1";
     QString ls_DecoyFormat = "decoy_%1";
+    int li_DecoyAmount = 1;
     
     // consume options
     while (!lk_Arguments.empty())
@@ -272,6 +275,18 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
                 exit(1);
             }
         } 
+        else if (lk_Arguments.first() == "--decoyAmount")
+        {
+            lk_Arguments.removeFirst();
+            bool lb_Ok = false;
+            QString ls_Value = lk_Arguments.takeFirst();
+            li_DecoyAmount = QVariant(ls_Value).toInt(&lb_Ok);
+            if (!lb_Ok)
+            {
+                printf("Error: Invalid integer '%s'.\n", ls_Value.toStdString().c_str());
+                exit(1);
+            }
+        } 
         else
             break;
     }
@@ -306,20 +321,25 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
             r_FastaEntry lr_TargetEntry = lr_Entry;
             lr_TargetEntry.ms_Id = QString(ls_TargetFormat).arg(lr_TargetEntry.ms_Id);
             lk_FastaWriter.writeEntry(lr_TargetEntry);
-            r_FastaEntry lr_DecoyEntry = lr_Entry;
-            lr_DecoyEntry.ms_Id = QString(ls_DecoyFormat).arg(lr_DecoyEntry.ms_Id);
-            // create decoy
-            if (lr_DecoyEntry.ms_Entry.length() > li_KeepStart + li_KeepEnd)
+            for (int i = 0; i < li_DecoyAmount; ++i)
             {
-                // only change the entry if there's something left to shuffle/reverse
-                // after the untouched start and end fragments have been left alone
-                QString ls_Start = lr_DecoyEntry.ms_Entry.left(li_KeepStart);
-                QString ls_End = lr_DecoyEntry.ms_Entry.right(li_KeepEnd);
-                lr_DecoyEntry.ms_Entry.truncate(lr_DecoyEntry.ms_Entry.length() - li_KeepEnd);
-                lr_DecoyEntry.ms_Entry.remove(0, li_KeepStart);
-                lr_DecoyEntry.ms_Entry = ls_Start + makeDecoy(lr_DecoyEntry.ms_Entry, le_Method) + ls_End;
+                r_FastaEntry lr_DecoyEntry = lr_Entry;
+                lr_DecoyEntry.ms_Id = QString(ls_DecoyFormat).arg(lr_DecoyEntry.ms_Id);
+                if (li_DecoyAmount > 1)
+                    lr_DecoyEntry.ms_Id += QString("__%1").arg(i + 1);
+                // create decoy
+                if (lr_DecoyEntry.ms_Entry.length() > li_KeepStart + li_KeepEnd)
+                {
+                    // only change the entry if there's something left to shuffle/reverse
+                    // after the untouched start and end fragments have been left alone
+                    QString ls_Start = lr_DecoyEntry.ms_Entry.left(li_KeepStart);
+                    QString ls_End = lr_DecoyEntry.ms_Entry.right(li_KeepEnd);
+                    lr_DecoyEntry.ms_Entry.truncate(lr_DecoyEntry.ms_Entry.length() - li_KeepEnd);
+                    lr_DecoyEntry.ms_Entry.remove(0, li_KeepStart);
+                    lr_DecoyEntry.ms_Entry = ls_Start + makeDecoy(lr_DecoyEntry.ms_Entry, le_Method) + ls_End;
+                }
+                lk_FastaWriter.writeEntry(lr_DecoyEntry);
             }
-            lk_FastaWriter.writeEntry(lr_DecoyEntry);
         }
     }
     
