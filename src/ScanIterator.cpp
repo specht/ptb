@@ -153,6 +153,11 @@ void k_ScanIterator::convertValues(QByteArray ak_Data, int ai_Size, int ai_Preci
             if (ai_Precision == 32)
             {
                 float lf_Value;
+                for (int i = 0; i < 4; ++i)
+                {
+                    printf("%02x ", *(luc_Buffer_ + i));
+                }
+                exit(1);
                 memcpy(&lf_Value, luc_Buffer_, 4);
                 luc_Buffer_ += 4;
                 if (lb_NeedSwap)
