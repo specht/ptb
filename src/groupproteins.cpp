@@ -60,6 +60,7 @@ bool stringToBool(QString& as_String)
 };
 
 
+// lk_PeptidesForProtein: protein ID -> peptide ID
 QHash<int, QSet<int> > lk_PeptidesForProtein;
 
 
@@ -69,6 +70,7 @@ bool compareByPeptideCount(const int a, const int b)
 }
 
 
+// lk_ProteinGroups: (set of peptide IDs): (set of protein IDs)
 QList<tk_IntSetPair> lk_ProteinGroups;
 
 
@@ -139,6 +141,7 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
     foreach (QVariant ls_Protein, lk_Info["proteins"].toList())
         lk_ProteinNames << ls_Protein.toString();
     
+    // lk_PeptideOccurences: peptide -> count
     QHash<int, int> lk_PeptideOccurences;
     
     // load proteins
@@ -157,29 +160,37 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
         }
     }
     
+    // li_UnambiguousPeptideCount: number of peptides that occur in a single
+    // protein only
     int li_UnambiguousPeptideCount = 0;
     foreach (int li_PeptideIndex, lk_PeptideOccurences.keys())
     {
         if (lk_PeptideOccurences[li_PeptideIndex] == 1)
             li_UnambiguousPeptideCount += 1;
     }
-    
+
+    // the unambiguous peptides can be used for direct protein identification,
+    // if the database was complete, print this as 'pre-grouping peptide yield'.
     printf("Peptide yield before grouping: %1.1f%% of %d peptides.\n", 
            (double)li_UnambiguousPeptideCount * 100.0 / lk_PeptideOccurences.size(),
            lk_PeptideOccurences.size());
     
     int li_TotalProteinCount = lk_ProteinNames.size();
     
+    // lk_SingletonProteins: proteins that are a group of their own,
+    // initially all proteins
     QSet<int> lk_SingletonProteins;
     for (int a = 0; a < li_TotalProteinCount; ++a)
         lk_SingletonProteins << a;
     
+    // lk_ProteinGroupsSorted: (peptide set): (protein list, sorted by peptide count, descending)
     QList<tk_IntSetIntListPair> lk_ProteinGroupsSorted;
     
     int li_TotalIterationCount = (li_TotalProteinCount * li_TotalProteinCount - li_TotalProteinCount) / 2;
     int li_IterationOffset = 0;
     QString ls_LastPercentage;
-    
+
+    // compare every protein A against every other protein B (skip B vs. A)
     for (int a = 0; a < li_TotalProteinCount; ++a)
     {
         for (int b = a + 1; b < li_TotalProteinCount; ++b)
@@ -200,7 +211,9 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
             int li_MaxSize = qMax(lk_PeptidesA.size(), lk_PeptidesB.size());
             if (lk_Combined.size() == li_MaxSize)
             {
-                // these proteins belong together!
+                // A is a subset of B or B is a subset of A, join these two proteins!
+                // these proteins belong together! yay!
+                // now they're no more singleton proteins
                 lk_SingletonProteins.remove(a);
                 lk_SingletonProteins.remove(b);
                 bool lb_CouldJoin = false;
@@ -212,7 +225,14 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
                     int li_MaxSize = qMax(lk_Peptides.size(), lk_Combined.size());
                     if (lk_SubMerged.size() == li_MaxSize)
                     {
-                        // we can join an existing protein group!
+                        // our freshly created 2-protein-mini-group is a subset of another
+                        // already existing protein group, or vice-versa, and we can
+                        // join everything!
+                        // we can join an existing protein group! yay!
+                        // after we have joined, break the loop, 
+                        // DO NOT compare remaining protein groups!
+                        // is this correct?
+                        // probably NOT?!
                         lk_ProteinGroups[i].first |= lk_Combined;
                         lk_ProteinGroups[i].second << a;
                         lk_ProteinGroups[i].second << b;
@@ -221,19 +241,19 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
                     }
                 }
                 if (!lb_CouldJoin)
-                    // start a new protein group
+                    // we couldn't join anybody, start a new protein group
                     lk_ProteinGroups.append(tk_IntSetPair(lk_Combined, tk_IntSet() << a << b));
             }
         }
     }
     printf("\rAnalyzing protein pairs... 100.0%% done.\n");
     
-    // add ungrouped proteins
+    // add ungrouped proteins (singletons)
     foreach (int a, lk_SingletonProteins)
         lk_ProteinGroups.append(tk_IntSetPair(lk_PeptidesForProtein[a], tk_IntSet() << a));
     
-    // convert protein sets into sorted protein lists, 
-    // all-peptide-comprising ones first
+    // convert protein group sets into sorted protein group lists, 
+    // all-peptide-comprising ones first (sort proteins by peptide count)
     for (int i = 0; i < lk_ProteinGroups.size(); ++i)
     {
         tk_IntSetPair lk_InPair = lk_ProteinGroups[i];
@@ -248,6 +268,7 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
     printf("There are %d protein groups.\n", lk_ProteinGroups.size());
 
     // determine unique and razor peptides
+    // lk_GroupsForPeptide: (peptide id) => (set of group IDs)
     QHash<int, tk_IntSet> lk_GroupsForPeptide;
     for (int i = 0; i < lk_ProteinGroups.size(); ++i)
     {
