@@ -128,8 +128,11 @@ void k_MgfWriter::flushScan(r_Scan& ar_Scan, r_Precursor* ar_Precursor_)
     {
         mk_TextStream << "BEGIN IONS\n";
         mk_TextStream << "TITLE=" << ms_SpotName << "." << ar_Scan.ms_Id << "." << ar_Scan.ms_Id << ".x\n";
-        for (int i = 0; i < ar_Scan.mr_Spectrum.mi_PeaksCount; ++i)
-            mk_TextStream << this->ftos(ar_Scan.mr_Spectrum.md_MzValues_[i]) << " " << this->ftos(ar_Scan.mr_Spectrum.md_IntensityValues_[i]) << "\n";
+        QList<r_Peak> lk_AllPeaks = findAllPeaks(ar_Scan.mr_Spectrum);
+        foreach (r_Peak lr_Peak, lk_AllPeaks)
+            mk_TextStream << this->ftos(lr_Peak.md_PeakMz) << " " << this->ftos(lr_Peak.md_PeakIntensity) << "\n";
+/*        for (int i = 0; i < ar_Scan.mr_Spectrum.mi_PeaksCount; ++i)
+            mk_TextStream << this->ftos(ar_Scan.mr_Spectrum.md_MzValues_[i]) << " " << this->ftos(ar_Scan.mr_Spectrum.md_IntensityValues_[i]) << "\n";*/
         mk_TextStream << "END IONS\n\n";
     }
     else
@@ -139,8 +142,11 @@ void k_MgfWriter::flushScan(r_Scan& ar_Scan, r_Precursor* ar_Precursor_)
         mk_TextStream << "PEPMASS=" << this->ftos(ar_Precursor_->md_Mz) << "\n";
         if (ar_Precursor_->mi_ChargeState > 0)
             mk_TextStream << "CHARGE=" << ar_Precursor_->mi_ChargeState << "\n";
-        for (int i = 0; i < ar_Scan.mr_Spectrum.mi_PeaksCount; ++i)
-            mk_TextStream << this->ftos(ar_Scan.mr_Spectrum.md_MzValues_[i]) << " " << this->ftos(ar_Scan.mr_Spectrum.md_IntensityValues_[i]) << "\n";
+        QList<r_Peak> lk_AllPeaks = findAllPeaks(ar_Scan.mr_Spectrum);
+        foreach (r_Peak lr_Peak, lk_AllPeaks)
+            mk_TextStream << this->ftos(lr_Peak.md_PeakMz) << " " << this->ftos(lr_Peak.md_PeakIntensity) << "\n";
+/*        for (int i = 0; i < ar_Scan.mr_Spectrum.mi_PeaksCount; ++i)
+            mk_TextStream << this->ftos(ar_Scan.mr_Spectrum.md_MzValues_[i]) << " " << this->ftos(ar_Scan.mr_Spectrum.md_IntensityValues_[i]) << "\n";*/
         mk_TextStream << "END IONS\n\n";
     }
     ++mi_CurrentBatchSize;

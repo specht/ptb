@@ -43,6 +43,7 @@ along with Proteomics Toolbox.  If not, see <http://www.gnu.org/licenses/>.
 #define CV_MS_INTENSITY "MS:1000042"
 #define CV_MS_SPECTRUM_REPRESENTATION_CENTROID "MS:1000127"
 #define CV_MS_SPECTRUM_REPRESENTATION_PROFILE "MS:1000128"
+#define CV_MS_SELECTED_ION_MZ "MS:1000744"
 
 
 k_MzMlHandler::k_MzMlHandler(k_ScanIterator& ak_ScanIterator)
@@ -125,7 +126,7 @@ void k_MzMlHandler::handleElement(const QString& as_Tag, const tk_XmlAttributes&
             ms_BinaryCompression = ls_Accession;
         else if (ls_Accession == CV_MS_MZ_ARRAY || ls_Accession == CV_MS_INTENSITY_ARRAY)
             ms_BinaryType = ls_Accession;
-        else if (ls_Accession == CV_MS_MZ)
+        else if (ls_Accession == CV_MS_MZ || ls_Accession == CV_MS_SELECTED_ION_MZ)
         {
             if (mk_XmlPath[1].first == "selectedIon")
                 ms_PrecursorMz = ak_Attributes["value"];

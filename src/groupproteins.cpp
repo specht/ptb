@@ -169,8 +169,8 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
             li_UnambiguousPeptideCount += 1;
     }
 
-    // the unambiguous peptides can be used for direct protein identification,
-    // if the database was complete, print this as 'pre-grouping peptide yield'.
+    // the unambiguous peptides can be used for direct protein identification
+    // (if the database was complete), print this as 'pre-grouping peptide yield'.
     printf("Peptide yield before grouping: %1.1f%% of %d peptides.\n", 
            (double)li_UnambiguousPeptideCount * 100.0 / lk_PeptideOccurences.size(),
            lk_PeptideOccurences.size());
