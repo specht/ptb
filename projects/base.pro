@@ -33,12 +33,12 @@ else {
 
 DESTDIR = ../../
 
-; linux-g++ {
-;     CONFIG += static
-;     QMAKE_LFLAGS += -L/usr/local/lib
-;     LIBS += -ldl -lrt
-;     message("STATIC LINKAGE")
-; }
+linux-g++ {
+    CONFIG += static
+    QMAKE_LFLAGS += -L/usr/local/lib
+    LIBS += -ldl -lrt
+    message("STATIC LINKAGE")
+}
 
 QT = core xml
 
