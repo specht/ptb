@@ -42,6 +42,8 @@ k_MgfWriter::~k_MgfWriter()
 void k_MgfWriter::convert(QStringList ak_SpectraFiles, 
                           QString as_OutputPath, 
                           int ai_BatchSize, 
+                          int ai_MzDecimalPlaces,
+                          int ai_IntensityDecimalPlaces,
                           QString as_RetentionTimesPath,
                           QSet<QString> ak_Ids)
 {
@@ -49,6 +51,8 @@ void k_MgfWriter::convert(QStringList ak_SpectraFiles,
     mk_FoundIds.clear();
     ms_OutputPath = as_OutputPath;
     mi_BatchSize = ai_BatchSize;
+    mi_MzDecimalPlaces = ai_MzDecimalPlaces;
+    mi_IntensityDecimalPlaces = ai_IntensityDecimalPlaces;
     mi_PartCounter = 0;
     mi_CurrentBatchSize = 0;
     if (!as_RetentionTimesPath.isEmpty())
@@ -130,7 +134,7 @@ void k_MgfWriter::flushScan(r_Scan& ar_Scan, r_Precursor* ar_Precursor_)
         mk_TextStream << "TITLE=" << ms_SpotName << "." << ar_Scan.ms_Id << "." << ar_Scan.ms_Id << ".x\n";
         QList<r_Peak> lk_AllPeaks = findAllPeaks(ar_Scan.mr_Spectrum);
         foreach (r_Peak lr_Peak, lk_AllPeaks)
-            mk_TextStream << this->ftos(lr_Peak.md_PeakMz) << " " << this->ftos(lr_Peak.md_PeakIntensity) << "\n";
+            mk_TextStream << this->ftos(lr_Peak.md_PeakMz, mi_MzDecimalPlaces) << " " << this->ftos(lr_Peak.md_PeakIntensity, mi_IntensityDecimalPlaces) << "\n";
 /*        for (int i = 0; i < ar_Scan.mr_Spectrum.mi_PeaksCount; ++i)
             mk_TextStream << this->ftos(ar_Scan.mr_Spectrum.md_MzValues_[i]) << " " << this->ftos(ar_Scan.mr_Spectrum.md_IntensityValues_[i]) << "\n";*/
         mk_TextStream << "END IONS\n\n";
@@ -144,7 +148,7 @@ void k_MgfWriter::flushScan(r_Scan& ar_Scan, r_Precursor* ar_Precursor_)
             mk_TextStream << "CHARGE=" << ar_Precursor_->mi_ChargeState << "\n";
         QList<r_Peak> lk_AllPeaks = findAllPeaks(ar_Scan.mr_Spectrum);
         foreach (r_Peak lr_Peak, lk_AllPeaks)
-            mk_TextStream << this->ftos(lr_Peak.md_PeakMz) << " " << this->ftos(lr_Peak.md_PeakIntensity) << "\n";
+            mk_TextStream << this->ftos(lr_Peak.md_PeakMz, mi_MzDecimalPlaces) << " " << this->ftos(lr_Peak.md_PeakIntensity, mi_IntensityDecimalPlaces) << "\n";
 /*        for (int i = 0; i < ar_Scan.mr_Spectrum.mi_PeaksCount; ++i)
             mk_TextStream << this->ftos(ar_Scan.mr_Spectrum.md_MzValues_[i]) << " " << this->ftos(ar_Scan.mr_Spectrum.md_IntensityValues_[i]) << "\n";*/
         mk_TextStream << "END IONS\n\n";
@@ -153,11 +157,12 @@ void k_MgfWriter::flushScan(r_Scan& ar_Scan, r_Precursor* ar_Precursor_)
 }
 
 
-QString k_MgfWriter::ftos(double ad_Value)
+QString k_MgfWriter::ftos(double ad_Value, int ai_DecimalPlaces)
 {
-    char lc_Temp_[1024];
-    sprintf(lc_Temp_, "%1.6lf", ad_Value);
-    QString ls_Result(lc_Temp_);
+    int li_DecimalPlaces = 6;
+    if (ai_DecimalPlaces >= 0)
+        li_DecimalPlaces = ai_DecimalPlaces;
+    QString ls_Result = QString("%1").arg(ad_Value, 0, 'f', li_DecimalPlaces);
     if (ls_Result.contains("."))
     {
         while (ls_Result.endsWith("0"))

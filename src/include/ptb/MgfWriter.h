@@ -31,13 +31,15 @@ public:
     
     virtual void convert(QStringList ak_SpectraFiles, QString as_OutputPath, 
                          int ai_BatchSize = 0, 
+                         int ai_MzDecimalPlaces = -1,
+                         int ai_IntensityDecimalPlaces = -1,
                          QString as_RetentionTimesPath = QString(),
                          QSet<QString> ak_Ids = QSet<QString>());
     virtual void handleScan(r_Scan& ar_Scan, bool& ab_Continue);
     
 protected:
     virtual void flushScan(r_Scan& ar_Scan, r_Precursor* ar_Precursor_ = NULL);
-    virtual QString ftos(double ad_Value);
+    virtual QString ftos(double ad_Value, int ai_DecimalPlaces = -1);
     
     QTextStream mk_TextStream;
     QSharedPointer<QFile> mk_pFile;
@@ -47,6 +49,8 @@ protected:
     QString ms_SpotName;
     QString ms_OutputPath;
     int mi_BatchSize;
+    int mi_MzDecimalPlaces;
+    int mi_IntensityDecimalPlaces;
     int mi_PartCounter;
     int mi_CurrentBatchSize;
     QSet<QString> mk_Ids;

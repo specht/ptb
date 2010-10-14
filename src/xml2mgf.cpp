@@ -28,6 +28,8 @@ void printUsageAndExit()
     printf("Spectra files may be mzML, mzXML or mzData, optionally compressed (.gz, .bz2, .zip).\n");
     printf("Options:\n");
     printf("  -o, --output [filename]: specify output filename\n");
+    printf("  -mzdp, --mzDecimalPlaces [n]: specify number of decimal places for m/z values\n");
+    printf("  -idp, --intensityDecimalPlaces [n]: specify number of decimal places for intensity values\n");
     printf("  -b, --batch [n]: create batches of n spectra\n");
     printf("  -rt, --retentionTimes [filename]: specify an output filename for scan retention times\n");
     printf("  -i, --id [id list]: specify which scans to extract\n");
@@ -48,6 +50,8 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
     QString ls_OutputPath = "";
     QString ls_RetentionTimesPath = "";
     int li_BatchSize = 0;
+    int li_MzDecimalPlaces = -1;
+    int li_IntensityDecimalPlaces = -1;
     
     QSet<QString> lk_Ids;
     
@@ -59,6 +63,16 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
             lk_Arguments.removeFirst();
             ls_OutputPath = lk_Arguments.takeFirst();
         } 
+        else if (lk_Arguments.first() == "-mzdp" || lk_Arguments.first() == "--mzDecimalPlaces")
+        {
+            lk_Arguments.removeFirst();
+            li_MzDecimalPlaces = QVariant(lk_Arguments.takeFirst()).toInt();
+        }
+        else if (lk_Arguments.first() == "-idp" || lk_Arguments.first() == "--intensityDecimalPlaces")
+        {
+            lk_Arguments.removeFirst();
+            li_IntensityDecimalPlaces = QVariant(lk_Arguments.takeFirst()).toInt();
+        }
         else if (lk_Arguments.first() == "-b" || lk_Arguments.first() == "--batch")
         {
             lk_Arguments.removeFirst();
@@ -103,5 +117,7 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
         lk_SpectraFiles << ls_Path;
     }
         
-    lk_MgfWriter.convert(lk_SpectraFiles, ls_OutputPath, li_BatchSize, ls_RetentionTimesPath, lk_Ids);
+    lk_MgfWriter.convert(lk_SpectraFiles, ls_OutputPath, li_BatchSize, 
+                         li_MzDecimalPlaces, li_IntensityDecimalPlaces, 
+                         ls_RetentionTimesPath, lk_Ids);
 }
