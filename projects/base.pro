@@ -6,7 +6,7 @@ DEPENDPATH += .
 INCLUDEPATH += . ../../src/include/
 
 macx {
-    LIBPATH += /Users/michael/programming/ext/lib
+    QMAKE_LIBDIR += /Users/michael/programming/ext/lib
     INCLUDEPATH += /Users/michael/programming/ext/include
 }
 
@@ -16,9 +16,14 @@ macx {
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.4
 }
 
-LIBS += -lz -lbz2 -lquazip -lyaml-cpp
+LIBS += -lz -lbz2
 
-
+macx {
+    LIBS += /Users/michael/programming/ext/lib/libquazip.a /Users/michael/programming/ext/lib/libyaml-cpp.a
+}
+else {
+    LIBS += -lquazip -lyaml-cpp
+}
 
 CONFIG(debug, debug|release) {
     OBJECTS_DIR = ../../obj/debug/
