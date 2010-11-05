@@ -57,6 +57,7 @@ HEADERS += \
     ../../src/include/ptb/MzDataHandler.h \
     ../../src/include/ptb/MzMlHandler.h \
     ../../src/include/ptb/MzXmlHandler.h \
+    ../../src/include/ptb/PeakMatcher.h \
     ../../src/include/ptb/ScanIterator.h \
     ../../src/include/ptb/XmlHandler.h \
     ../../src/Yaml.h \
@@ -72,6 +73,7 @@ SOURCES += \
     ../../src/MzDataHandler.cpp \
     ../../src/MzMlHandler.cpp \
     ../../src/MzXmlHandler.cpp \
+    ../../src/PeakMatcher.cpp \
     ../../src/ScanIterator.cpp \
     ../../src/XmlHandler.cpp \
     ../../src/Yaml.cpp \

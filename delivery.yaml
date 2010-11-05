@@ -6,6 +6,7 @@ projects:
   - projects/decoyfasta
   - projects/groupproteins
   - projects/stripscans
+  - projects/matchpeaks
   - projects/matchpeptides
   - projects/translatedna
 qt: [core, xml]
