@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2007-2008 Michael Specht
+Copyright (c) 2007-2010 Michael Specht, Christian Fufezan
 
 This file is part of Proteomics Toolbox.
 
@@ -264,17 +264,20 @@ QList<r_Peak> k_ScanIterator::findAllPeaks(r_Spectrum& ar_Spectrum, double ad_Mi
                         
                         if (lr_Peak.md_Snr >= ad_MinSnr)
                         {
-                            fitGaussian(&lr_Peak.md_GaussA, &lr_Peak.md_GaussB, &lr_Peak.md_GaussC,
-                                        ar_Spectrum.md_MzValues_[lr_Peak.mi_PeakIndex - 1],
-                                        ar_Spectrum.md_IntensityValues_[lr_Peak.mi_PeakIndex - 1],
-                                        ar_Spectrum.md_MzValues_[lr_Peak.mi_PeakIndex],
-                                        ar_Spectrum.md_IntensityValues_[lr_Peak.mi_PeakIndex],
-                                        ar_Spectrum.md_MzValues_[lr_Peak.mi_PeakIndex + 1],
-                                        ar_Spectrum.md_IntensityValues_[lr_Peak.mi_PeakIndex + 1]);
-                            lr_Peak.md_PeakMz = lr_Peak.md_GaussB;
-                            lr_Peak.md_PeakIntensity = lr_Peak.md_GaussA;
-                            lr_Peak.md_PeakArea = lr_Peak.md_GaussA * lr_Peak.md_GaussC;
-                            lk_Results.push_back(lr_Peak);
+                            if (ar_Spectrum.md_IntensityValues_[lr_Peak.mi_PeakIndex - 1] > 0 && ar_Spectrum.md_IntensityValues_[lr_Peak.mi_PeakIndex + 1] > 0) 
+                            {
+                                fitGaussian(&lr_Peak.md_GaussA, &lr_Peak.md_GaussB, &lr_Peak.md_GaussC,
+                                            ar_Spectrum.md_MzValues_[lr_Peak.mi_PeakIndex - 1],
+                                            ar_Spectrum.md_IntensityValues_[lr_Peak.mi_PeakIndex - 1],
+                                            ar_Spectrum.md_MzValues_[lr_Peak.mi_PeakIndex],
+                                            ar_Spectrum.md_IntensityValues_[lr_Peak.mi_PeakIndex],
+                                            ar_Spectrum.md_MzValues_[lr_Peak.mi_PeakIndex + 1],
+                                            ar_Spectrum.md_IntensityValues_[lr_Peak.mi_PeakIndex + 1]);
+                                lr_Peak.md_PeakMz = lr_Peak.md_GaussB;
+                                lr_Peak.md_PeakIntensity = lr_Peak.md_GaussA;
+                                lr_Peak.md_PeakArea = lr_Peak.md_GaussA * lr_Peak.md_GaussC;
+                                lk_Results.push_back(lr_Peak);
+                            }
                         }
                     }
                     li_ValleyIndex = i - 1;
@@ -317,6 +320,7 @@ void k_ScanIterator::fitGaussian(double* a_, double* b_, double* c_,
     *a_ = a;
     *b_ = b;
     *c_ = c;
+    // qDebug() << x0 << y0 << x1 << y1 << x2 << y2;
 }
                                
 
