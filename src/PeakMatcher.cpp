@@ -51,7 +51,7 @@ void k_PeakMatcher::match(QStringList ak_SpectraFiles,
     md_Snr = ad_Snr;
     md_Crop = ad_Crop;
 
-    (*mk_pOutStream) << QString("Filename,Scan ID,MS level,Match count,Peak m/z,Peak intensity,Target m/z,Mass difference (peak-target),Mass error (ppm)\n");
+    (*mk_pOutStream) << QString("Filename,Scan ID,MS level,Match count,Peak m/z,Absolute peak intensity,Relative peak intensity,Target m/z,Mass difference (peak-target),Mass error (ppm)\n");
 
     mk_TargetStrings.clear();
     mk_TargetMz.clear();
@@ -194,13 +194,14 @@ void k_PeakMatcher::handleScan(r_Scan& ar_Scan, bool& ab_Continue)
         {
             double ld_MassDiff = lk_Peaks[li_PeakIndex].md_PeakMz - mk_TargetMz[li_MatchTargetIndex];
             double ld_MassError = (fabs(ld_MassDiff) / mk_TargetMz[li_MatchTargetIndex]) * 1000000.0;
-            (*mk_pOutStream) << QString("\"%1\",%2,%3,%4,%5,%6,%7,%8,%9\n")
+            (*mk_pOutStream) << QString("\"%1\",%2,%3,%4,%5,%6,%7,%8,%9,%10\n")
                 .arg(ms_SpotName)
                 .arg(ar_Scan.ms_Id)
                 .arg(ar_Scan.mi_MsLevel)
                 .arg(lk_Matches.size())
                 .arg(lk_Peaks[li_PeakIndex].md_PeakMz, 0, 'f', 4)
                 .arg(lk_Peaks[li_PeakIndex].md_PeakIntensity, 0, 'f', 4)
+                .arg(lk_Peaks[li_PeakIndex].md_PeakIntensity / ld_MaxIntensity, 0, 'f', 4)
                 .arg(mk_TargetStrings[li_MatchTargetIndex])
                 .arg(ld_MassDiff, 0, 'f', 4)
                 .arg(ld_MassError, 0, 'f', 4);
