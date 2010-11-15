@@ -28,6 +28,8 @@ void printUsageAndExit()
     fprintf(stderr, "Spectra files may be mzML, mzXML or mzData, optionally compressed (.gz, .bz2, .zip).\n");
     fprintf(stderr, "Options:\n");
     fprintf(stderr, "  -a, --accuracy [float]: specify mass accuracy in ppm (default: 5.0 ppm)\n");
+    fprintf(stderr, "  -s, --snr [float]: specify signal-to-noise ratio for peak picking (default: 2.0)\n");
+    fprintf(stderr, "  -c, --crop [float]: specify minimum peak relative abundance (default: 0.05)\n");
     fprintf(stderr, "  -l, --levels [list]: specify MS levels to be matched (default: all)\n");
     fprintf(stderr, "    examples: '1', '1,2', or 'all'\n");
     fprintf(stderr, "  -o, --output [filename]: specify output filename\n");
@@ -50,6 +52,8 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
     QIODevice* lk_OutDevice_ = &lk_StdOut;
 
     double ld_MassAccuracy = 5.0;
+    double ld_Snr = 2.0;
+    double ld_Crop = 0.05;
     QString ls_Levels = "all";
     
     // consume options
@@ -64,6 +68,30 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
             if (!lb_Ok)
             {
                 fprintf(stderr, "Error: Invalid mass accuracy specified: '%s'.\n", ls_Accuracy.toStdString().c_str());
+                exit(1);
+            }
+        } 
+        else if (lk_Arguments.first() == "-s" || lk_Arguments.first() == "--snr")
+        {
+            lk_Arguments.removeFirst();
+            QString ls_Snr = lk_Arguments.takeFirst();
+            bool lb_Ok = false;
+            ld_Snr = ls_Snr.toDouble(&lb_Ok);
+            if (!lb_Ok)
+            {
+                fprintf(stderr, "Error: Invalid signal-to-noise threshold specified: '%s'.\n", ls_Snr.toStdString().c_str());
+                exit(1);
+            }
+        } 
+        else if (lk_Arguments.first() == "-c" || lk_Arguments.first() == "--crop")
+        {
+            lk_Arguments.removeFirst();
+            QString ls_Crop = lk_Arguments.takeFirst();
+            bool lb_Ok = false;
+            ld_Crop = ls_Crop.toDouble(&lb_Ok);
+            if (!lb_Ok)
+            {
+                fprintf(stderr, "Error: Invalid crop threshold specified: '%s'.\n", ls_Crop.toStdString().c_str());
                 exit(1);
             }
         } 
@@ -165,13 +193,13 @@ int main(int ai_ArgumentCount, char** ac_Arguments__)
     }
     
     k_PeakMatcher lk_PeakMatcher(r_ScanType::All, QList<tk_IntPair>() << tk_IntPair(1, 0x10000));
-    fprintf(stderr, "Searching for %d target m/z value%s in %d spectral file%s, checking %s using a mass accuracy of %1.2f ppm.\n", 
+    fprintf(stderr, "Searching for %d target m/z value%s in %d spectral file%s, checking %s using a mass accuracy of %1.2f ppm.\nUsing a SNR of %1.2f and a crop threshold of %1.2f%%.\n", 
             lk_Targets.size(), 
             lk_Targets.size() == 1 ? "" : "s",
             lk_SpectraFiles.size(),
             lk_SpectraFiles.size() == 1 ? "" : "s",
             ls_LevelsDescription.toStdString().c_str(),
-            ld_MassAccuracy
+            ld_MassAccuracy, ld_Snr, ld_Crop * 100.0
            );
-    lk_PeakMatcher.match(lk_SpectraFiles, lk_OutDevice_, lk_Targets, lk_UseLevels, ld_MassAccuracy);
+    lk_PeakMatcher.match(lk_SpectraFiles, lk_OutDevice_, lk_Targets, lk_UseLevels, ld_MassAccuracy, ld_Snr, ld_Crop);
 }

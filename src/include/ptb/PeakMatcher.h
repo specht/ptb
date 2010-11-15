@@ -33,7 +33,9 @@ public:
                        QIODevice* ak_OutDevice_,
                        QStringList ak_Targets,
                        QSet<int> ak_MsLevels,
-                       double ad_MassAccuracy
+                       double ad_MassAccuracy,
+                       double ad_Snr,
+                       double ad_Crop
                       );
     
     virtual void handleScan(r_Scan& ar_Scan, bool& ab_Continue);
@@ -49,5 +51,7 @@ protected:
     QList<double> mk_TargetMzMax;
     QSet<int> mk_MsLevels;
     double md_MassAccuracy;
+    double md_Snr;
+    double md_Crop;
     QHash<QString, QPair<double, double> > mk_TargetRange;
 };

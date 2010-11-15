@@ -40,19 +40,19 @@ void k_PeakMatcher::match(QStringList ak_SpectraFiles,
                           QIODevice* ak_OutDevice_,
                           QStringList ak_Targets,
                           QSet<int> ak_MsLevels,
-                          double ad_MassAccuracy
+                          double ad_MassAccuracy,
+                          double ad_Snr,
+                          double ad_Crop
                          )
 {
     mk_pOutStream = QSharedPointer<QTextStream>(new QTextStream(ak_OutDevice_));
     mk_MsLevels = ak_MsLevels;
     md_MassAccuracy = ad_MassAccuracy;
+    md_Snr = ad_Snr;
+    md_Crop = ad_Crop;
 
-    /*
-     QStringList mk_TargetStrings;
-     QList<double> mk_TargetMz;
-     QList<double> mk_TargetMzMin;
-     QList<double> mk_TargetMzMax;
-     */
+    (*mk_pOutStream) << QString("Filename,Scan ID,MS level,Match count,Peak m/z,Peak intensity,Target m/z,Mass difference (peak-target),Mass error (ppm)\n");
+
     mk_TargetStrings.clear();
     mk_TargetMz.clear();
     mk_TargetMzMin.clear();
@@ -115,6 +115,32 @@ void k_PeakMatcher::handleScan(r_Scan& ar_Scan, bool& ab_Continue)
         fprintf(stderr, "Warning: Empty spectrum (scan #%s @ %1.2f minutes)!\n", ar_Scan.ms_Id.toStdString().c_str(), ar_Scan.md_RetentionTime);
         return;
     }
+    
+    QList<r_Peak> lk_Peaks = findAllPeaks(ar_Scan.mr_Spectrum, md_Snr);
+    
+    // now chuck out all peaks which are less than md_Crop relative to
+    // the maximum intensity
+    // 1. determine maximum intensity
+    double ld_MaxIntensity = 0.0;
+    foreach (r_Peak lr_Peak, lk_Peaks)
+        if (lr_Peak.md_PeakIntensity > ld_MaxIntensity)
+            ld_MaxIntensity = lr_Peak.md_PeakIntensity;
+    // collect a list of indices to be deleted
+    QList<int> lk_DeleteIndices;
+    for (int i = 0; i < lk_Peaks.size(); ++i)
+    {
+        r_Peak lr_Peak = lk_Peaks[i];
+        if (lr_Peak.md_PeakIntensity < ld_MaxIntensity * md_Crop)
+            lk_DeleteIndices << i;
+    }
+    #ifdef DEBUF
+    qDebug() << "deleting" <<  lk_DeleteIndices.size() << "indices."
+    #endif
+    // delete indices in reversed order
+    for (int i = lk_DeleteIndices.size() - 1; i >= 0; --i)
+        lk_Peaks.removeAt(lk_DeleteIndices[i]);
+    // done and done!
+    
     // now match observed peaks to target peaks, both lists are sorted
 /*    for (int i = 0; i < ar_Scan.mr_Spectrum.mi_PeaksCount; ++i)
         fprintf(stderr, "%1.4f\n", ar_Scan.mr_Spectrum.md_MzValues_[i]);*/
@@ -125,7 +151,7 @@ void k_PeakMatcher::handleScan(r_Scan& ar_Scan, bool& ab_Continue)
         // exit the loop if there are no peaks or targets left
         if (li_TargetIndex >= mk_TargetMz.size())
             break;
-        if (li_PeakIndex >= ar_Scan.mr_Spectrum.mi_PeaksCount)
+        if (li_PeakIndex >= lk_Peaks.size())
             break;
 
         /*
@@ -138,7 +164,7 @@ void k_PeakMatcher::handleScan(r_Scan& ar_Scan, bool& ab_Continue)
         */
         
         // advance peak if left of current target minimum
-        if (ar_Scan.mr_Spectrum.md_MzValues_[li_PeakIndex] < mk_TargetMzMin[li_TargetIndex])
+        if (lk_Peaks[li_PeakIndex].md_PeakMz < mk_TargetMzMin[li_TargetIndex])
         {
             ++li_PeakIndex;
 //             fprintf(stderr, "+peak\n");
@@ -146,7 +172,7 @@ void k_PeakMatcher::handleScan(r_Scan& ar_Scan, bool& ab_Continue)
         }
         
         // advance target if left of current peak
-        if (ar_Scan.mr_Spectrum.md_MzValues_[li_PeakIndex] > mk_TargetMzMax[li_TargetIndex])
+        if (lk_Peaks[li_PeakIndex].md_PeakMz > mk_TargetMzMax[li_TargetIndex])
         {
             ++li_TargetIndex;
 //             fprintf(stderr, "+target\n");
@@ -156,9 +182,8 @@ void k_PeakMatcher::handleScan(r_Scan& ar_Scan, bool& ab_Continue)
         
         int li_TryTargetIndex = li_TargetIndex;
         QList<int> lk_Matches;
-        int li_MatchCount = 0;
-        while (mk_TargetMzMin[li_TryTargetIndex] <= ar_Scan.mr_Spectrum.md_MzValues_[li_PeakIndex] &&
-            mk_TargetMzMax[li_TryTargetIndex] >= ar_Scan.mr_Spectrum.md_MzValues_[li_PeakIndex])
+        while (mk_TargetMzMin[li_TryTargetIndex] <= lk_Peaks[li_PeakIndex].md_PeakMz &&
+            mk_TargetMzMax[li_TryTargetIndex] >= lk_Peaks[li_PeakIndex].md_PeakMz)
         {
             lk_Matches << li_TryTargetIndex;
             ++li_TryTargetIndex;
@@ -167,12 +192,18 @@ void k_PeakMatcher::handleScan(r_Scan& ar_Scan, bool& ab_Continue)
         }
         foreach (int li_MatchTargetIndex, lk_Matches)
         {
-            (*mk_pOutStream) << QString("\"%1\",%2,%3,%4,%5\n")
+            double ld_MassDiff = lk_Peaks[li_PeakIndex].md_PeakMz - mk_TargetMz[li_MatchTargetIndex];
+            double ld_MassError = (fabs(ld_MassDiff) / mk_TargetMz[li_MatchTargetIndex]) * 1000000.0;
+            (*mk_pOutStream) << QString("\"%1\",%2,%3,%4,%5,%6,%7,%8,%9\n")
                 .arg(ms_SpotName)
                 .arg(ar_Scan.ms_Id)
+                .arg(ar_Scan.mi_MsLevel)
                 .arg(lk_Matches.size())
-                .arg(ar_Scan.mr_Spectrum.md_MzValues_[li_PeakIndex], 0, 'f', 4)
-                .arg(ar_Scan.mr_Spectrum.md_IntensityValues_[li_PeakIndex], 0, 'f', 4);
+                .arg(lk_Peaks[li_PeakIndex].md_PeakMz, 0, 'f', 4)
+                .arg(lk_Peaks[li_PeakIndex].md_PeakIntensity, 0, 'f', 4)
+                .arg(mk_TargetStrings[li_MatchTargetIndex])
+                .arg(ld_MassDiff, 0, 'f', 4)
+                .arg(ld_MassError, 0, 'f', 4);
         }
         ++li_PeakIndex;
     }
