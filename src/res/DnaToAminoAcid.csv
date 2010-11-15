@@ -73,9 +73,9 @@ GNC;X
 GNG;X
 GNU;X
 GNN;X
-UAA;$
+UAA;*
 UAC;Y
-UAG;$
+UAG;*
 UAU;Y
 UAN;Y;X
 UCA;S
@@ -83,7 +83,7 @@ UCC;S
 UCG;S
 UCU;S
 UCN;S
-UGA;$
+UGA;*
 UGC;C
 UGG;W
 UGU;C
