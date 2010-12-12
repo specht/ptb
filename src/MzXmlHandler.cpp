@@ -39,7 +39,11 @@ bool k_MzXmlHandler::startElement(const QString &namespaceURI, const QString &lo
         return false;
     
     if (qName == "scan")
-        mk_ScanStack.push_front(r_Scan());
+    {
+        r_Scan lr_Scan;
+        lr_Scan.mr_Spectrum.mb_Centroided = true;
+        mk_ScanStack.push_front(lr_Scan);
+    }
         
     return k_XmlHandler::startElement(namespaceURI, localName, qName, attributes);
 }
@@ -79,6 +83,8 @@ void k_MzXmlHandler::handleElement(const QString& as_Tag, const tk_XmlAttributes
             mk_ScanStack.front().me_Type = r_ScanType::MSn;
         else if (lk_ScanAttributes["scanType"].toLower() == "sim")
             mk_ScanStack.front().me_Type = r_ScanType::SIM;
+        else if (lk_ScanAttributes["scanType"].toLower() == "epi")
+            mk_ScanStack.front().me_Type = r_ScanType::MSn;
         else
             mk_ScanStack.front().me_Type = r_ScanType::Unknown;
         mk_ScanStack.front().mi_MsLevel = QVariant(lk_ScanAttributes["msLevel"]).toInt();
