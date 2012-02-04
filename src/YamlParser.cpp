@@ -53,18 +53,18 @@ QVariant k_YamlParser::parseFromString(QString as_Yaml)
 
 QVariant k_YamlParser::parseAny(const YAML::Node* ak_Node_)
 {
-    switch (ak_Node_->GetType())
+    switch (ak_Node_->Type())
     {
-    case YAML::CT_SCALAR:
+    case YAML::NodeType::Scalar:
         return parseScalar(ak_Node_);
         break;
-    case YAML::CT_SEQUENCE:
+    case YAML::NodeType::Sequence:
         return parseSequence(ak_Node_);
         break;
-    case YAML::CT_MAP:
+    case YAML::NodeType::Map:
         return parseMap(ak_Node_);
         break;
-    case YAML::CT_NONE:
+    case YAML::NodeType::Null:
         return QVariant();
         break;
     }
