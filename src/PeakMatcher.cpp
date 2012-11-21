@@ -85,11 +85,11 @@ void k_PeakMatcher::match(QStringList ak_SpectraFiles,
         int li_Index = lk_TargetIndex[ld_Mz];
         mk_TargetStrings << ak_Targets[li_Index];
         bool lb_Ok = false;
-        double ld_Mz = ak_Targets[li_Index].toDouble(&lb_Ok);
-        mk_TargetMz << ld_Mz;
-        double ld_Error = ld_Mz * md_MassAccuracy / 1000000.0;
-        mk_TargetMzMin << ld_Mz - ld_Error;
-        mk_TargetMzMax << ld_Mz + ld_Error;
+        double ld_Mz2 = ak_Targets[li_Index].toDouble(&lb_Ok);
+        mk_TargetMz << ld_Mz2;
+        double ld_Error = ld_Mz2 * md_MassAccuracy / 1000000.0;
+        mk_TargetMzMin << ld_Mz2 - ld_Error;
+        mk_TargetMzMax << ld_Mz2 + ld_Error;
     }
     
     foreach (QString ls_Path, ak_SpectraFiles)

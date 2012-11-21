@@ -20,6 +20,12 @@ along with Proteomics Toolbox.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 #include <ptb/XmlHandler.h>
 
+struct r_HandleElementParams {
+    QString ms_Tag;
+    tk_XmlAttributes mk_Attributes;
+    QString ms_Text;
+};
+
 
 class k_MzMlHandler: public k_XmlHandler
 {
@@ -34,6 +40,7 @@ protected:
     virtual void handleElement(const QString& as_Tag, const tk_XmlAttributes& ak_Attributes, const QString as_Text);
     
     QSharedPointer<r_Scan> mr_pCurrentScan;
+    QHash<QString, QList<r_HandleElementParams> > mk_ReferenceableParameterGroups;
     QString ms_BinaryPrecision;
     QString ms_BinaryCompression;
     QString ms_BinaryType;

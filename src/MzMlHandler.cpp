@@ -81,6 +81,10 @@ bool k_MzMlHandler::startElement(const QString &namespaceURI, const QString &loc
         // create a fresh scan
         mr_pCurrentScan = QSharedPointer<r_Scan>(new r_Scan());
     }
+    else if (qName == "referenceableParamGroup")
+    {
+        mk_ReferenceableParameterGroups.insert(attributes.value("id"), QList<r_HandleElementParams>());
+    }
         
     return k_XmlHandler::startElement(namespaceURI, localName, qName, attributes);
 }
@@ -88,58 +92,82 @@ bool k_MzMlHandler::startElement(const QString &namespaceURI, const QString &loc
 
 void k_MzMlHandler::handleElement(const QString& as_Tag, const tk_XmlAttributes& ak_Attributes, const QString as_Text)
 {
+    if (as_Tag == "referenceableParamGroupRef")
+    {
+        // replay the parameters we found earlier...
+        QString ls_Id = ak_Attributes["ref"];
+        foreach (r_HandleElementParams lr_HandleElementParams, mk_ReferenceableParameterGroups[ls_Id])
+        {
+            this->handleElement(lr_HandleElementParams.ms_Tag,
+                                lr_HandleElementParams.mk_Attributes,
+                                lr_HandleElementParams.ms_Text);
+        }
+    }
+    
     if (as_Tag == "cvParam")
     {
-        QString ls_Accession = ak_Attributes["accession"];
-        if (ls_Accession == CV_MS_LEVEL)
-            mr_pCurrentScan->mi_MsLevel = QVariant(ak_Attributes["value"]).toInt();
-        else if (ls_Accession == CV_MS_SCAN_TYPE_MS1)
-            mr_pCurrentScan->me_Type = r_ScanType::MS1;
-        else if (ls_Accession == CV_MS_SCAN_TYPE_MSn)
-            mr_pCurrentScan->me_Type = r_ScanType::MSn;
-        else if (ls_Accession == CV_MS_SCAN_TYPE_CRM)
-            mr_pCurrentScan->me_Type = r_ScanType::CRM;
-        else if (ls_Accession == CV_MS_SCAN_TYPE_SIM)
-            mr_pCurrentScan->me_Type = r_ScanType::SIM;
-        else if (ls_Accession == CV_MS_SCAN_TYPE_SRM)
-            mr_pCurrentScan->me_Type = r_ScanType::SRM;
-        else if (ls_Accession == CV_MS_SCAN_TYPE_PDA)
-            mr_pCurrentScan->me_Type = r_ScanType::PDA;
-        else if (ls_Accession == CV_MS_SCAN_TYPE_SICC)
-            mr_pCurrentScan->me_Type = r_ScanType::SICC;
-        else if (ls_Accession == CV_MS_FILTER_STRING)
-            mr_pCurrentScan->ms_FilterLine = ak_Attributes["value"];
-        else if (ls_Accession == CV_MS_SPECTRUM_REPRESENTATION_CENTROID)
-            mr_pCurrentScan->mr_Spectrum.mb_Centroided = true;
-        else if (ls_Accession == CV_MS_SPECTRUM_REPRESENTATION_PROFILE)
-            mr_pCurrentScan->mr_Spectrum.mb_Centroided = false;
-        else if (ls_Accession == CV_MS_RETENTION_TIME)
+        if (mk_XmlPath.size() > 1 && mk_XmlPath[1].first == "referenceableParamGroup")
         {
-            mr_pCurrentScan->md_RetentionTime = QVariant(ak_Attributes["value"]).toDouble();
-            if (ak_Attributes.contains("unitAccession"))
-                if (ak_Attributes["unitAccession"] == CV_MS_TIME_UNIT_SECOND)
-                    mr_pCurrentScan->md_RetentionTime /= 60.0;
+            QString ls_Key = mk_XmlPath[1].second["id"];
+            r_HandleElementParams lr_HandleElementParams;
+            lr_HandleElementParams.ms_Tag = as_Tag;
+            lr_HandleElementParams.mk_Attributes = ak_Attributes;
+            lr_HandleElementParams.ms_Text = as_Text;
+            mk_ReferenceableParameterGroups[ls_Key].push_back(lr_HandleElementParams);
         }
-        else if (ls_Accession == CV_MS_32_BIT_FLOAT || ls_Accession == CV_MS_64_BIT_FLOAT)
-            ms_BinaryPrecision = ls_Accession;
-        else if (ls_Accession == CV_MS_NO_COMPRESSION || ls_Accession == CV_MS_ZLIB_COMPRESSION)
-            ms_BinaryCompression = ls_Accession;
-        else if (ls_Accession == CV_MS_MZ_ARRAY || ls_Accession == CV_MS_INTENSITY_ARRAY)
-            ms_BinaryType = ls_Accession;
-        else if (ls_Accession == CV_MS_MZ || ls_Accession == CV_MS_SELECTED_ION_MZ)
+        else
         {
-            if (mk_XmlPath[1].first == "selectedIon")
-                ms_PrecursorMz = ak_Attributes["value"];
-        }
-        else if (ls_Accession == CV_MS_INTENSITY)
-        {
-            if (mk_XmlPath[1].first == "selectedIon")
-                ms_PrecursorIntensity = ak_Attributes["value"];
-        }
-        else if (ls_Accession == CV_MS_CHARGE_STATE)
-        {
-            if (mk_XmlPath[1].first == "selectedIon")
-                ms_PrecursorChargeState = ak_Attributes["value"];
+            QString ls_Accession = ak_Attributes["accession"];
+            if (ls_Accession == CV_MS_LEVEL)
+                mr_pCurrentScan->mi_MsLevel = QVariant(ak_Attributes["value"]).toInt();
+            else if (ls_Accession == CV_MS_SCAN_TYPE_MS1)
+                mr_pCurrentScan->me_Type = r_ScanType::MS1;
+            else if (ls_Accession == CV_MS_SCAN_TYPE_MSn)
+                mr_pCurrentScan->me_Type = r_ScanType::MSn;
+            else if (ls_Accession == CV_MS_SCAN_TYPE_CRM)
+                mr_pCurrentScan->me_Type = r_ScanType::CRM;
+            else if (ls_Accession == CV_MS_SCAN_TYPE_SIM)
+                mr_pCurrentScan->me_Type = r_ScanType::SIM;
+            else if (ls_Accession == CV_MS_SCAN_TYPE_SRM)
+                mr_pCurrentScan->me_Type = r_ScanType::SRM;
+            else if (ls_Accession == CV_MS_SCAN_TYPE_PDA)
+                mr_pCurrentScan->me_Type = r_ScanType::PDA;
+            else if (ls_Accession == CV_MS_SCAN_TYPE_SICC)
+                mr_pCurrentScan->me_Type = r_ScanType::SICC;
+            else if (ls_Accession == CV_MS_FILTER_STRING)
+                mr_pCurrentScan->ms_FilterLine = ak_Attributes["value"];
+            else if (ls_Accession == CV_MS_SPECTRUM_REPRESENTATION_CENTROID)
+                mr_pCurrentScan->mr_Spectrum.mb_Centroided = true;
+            else if (ls_Accession == CV_MS_SPECTRUM_REPRESENTATION_PROFILE)
+                mr_pCurrentScan->mr_Spectrum.mb_Centroided = false;
+            else if (ls_Accession == CV_MS_RETENTION_TIME)
+            {
+                mr_pCurrentScan->md_RetentionTime = QVariant(ak_Attributes["value"]).toDouble();
+                if (ak_Attributes.contains("unitAccession"))
+                    if (ak_Attributes["unitAccession"] == CV_MS_TIME_UNIT_SECOND)
+                        mr_pCurrentScan->md_RetentionTime /= 60.0;
+            }
+            else if (ls_Accession == CV_MS_32_BIT_FLOAT || ls_Accession == CV_MS_64_BIT_FLOAT)
+                ms_BinaryPrecision = ls_Accession;
+            else if (ls_Accession == CV_MS_NO_COMPRESSION || ls_Accession == CV_MS_ZLIB_COMPRESSION)
+                ms_BinaryCompression = ls_Accession;
+            else if (ls_Accession == CV_MS_MZ_ARRAY || ls_Accession == CV_MS_INTENSITY_ARRAY)
+                ms_BinaryType = ls_Accession;
+            else if (ls_Accession == CV_MS_MZ || ls_Accession == CV_MS_SELECTED_ION_MZ)
+            {
+                if (mk_XmlPath[1].first == "selectedIon")
+                    ms_PrecursorMz = ak_Attributes["value"];
+            }
+            else if (ls_Accession == CV_MS_INTENSITY)
+            {
+                if (mk_XmlPath[1].first == "selectedIon")
+                    ms_PrecursorIntensity = ak_Attributes["value"];
+            }
+            else if (ls_Accession == CV_MS_CHARGE_STATE)
+            {
+                if (mk_XmlPath[1].first == "selectedIon")
+                    ms_PrecursorChargeState = ak_Attributes["value"];
+            }
         }
     } 
     else if (as_Tag == "binary")
@@ -216,6 +244,8 @@ void k_MzMlHandler::handleElement(const QString& as_Tag, const tk_XmlAttributes&
                     if (lk_Pair[0].trimmed() == "scan")
                         mr_pCurrentScan->ms_Id = lk_Pair[1].trimmed();
                 }
+                if (mr_pCurrentScan->ms_Id.isEmpty())
+                    mr_pCurrentScan->ms_Id = ls_Id.replace(' ', '_').replace('=', '_');
             }
             bool lb_Interesting = mk_ScanIterator.isInterestingScan(*(mr_pCurrentScan.data()));
             mk_ScanIterator.progressFunction(mr_pCurrentScan->ms_Id, lb_Interesting);
